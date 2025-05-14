@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cflow-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    networks:
+      - creative-flow
+    env_file:
+      - .env
+
+    depends_on:
+      - database
+
+  database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: cflow-database
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/dumps:/data/db
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    networks:
+      - creative-flow
+    env_file:
+      - .env
+
+networks:
+  creative-flow:
+    driver: bridge

@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id             String             @id @default(uuid())
+  name                String
+  description         String?
+  email               String             @unique
+  password            String
+  profile_picture_url String?
+  streak              Int
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  deletedAt           DateTime?
+  posts               Post[]
+  user_exercise       UserExercise[]
+  user_interest       UserInterest[]
+  user_savedLibrary   UserSavedLibrary[]
+  user_savedPost      UserSavedPost[]
+}
+
+model Interest {
+  interest_id   String         @id @default(uuid())
+  title         String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  exercises     Exercise[]
+  user_interest UserInterest[]
+}
+
+model Exercise {
+  exercise_id   String         @id @default(uuid())
+  type          String
+  title         String
+  description   String
+  text_field    String[]
+  image_url     String?
+  interest_id   String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  interest      Interest       @relation(fields: [interest_id], references: [interest_id], onDelete: NoAction)
+  user_exercise UserExercise[]
+}
+
+model Post {
+  post_id        String          @id @default(uuid())
+  owner_Id       String
+  title          String
+  description    String?
+  image_url      String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+  user           User            @relation(fields: [owner_Id], references: [user_id], onDelete: NoAction)
+  user_savedPost UserSavedPost[]
+}
+
+model Library {
+  library_id        String             @id @default(uuid())
+  description       String
+  link              String
+  image_url         String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  deletedAt         DateTime?
+  user_savedLibrary UserSavedLibrary[]
+}
+
+model UserInterest {
+  user_id     String
+  interest_id String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  interest    Interest  @relation(fields: [interest_id], references: [interest_id], onDelete: NoAction)
+  user        User      @relation(fields: [user_id], references: [user_id], onDelete: NoAction)
+
+  @@id([user_id, interest_id])
+}
+
+model UserExercise {
+  user_id     String
+  exercise_id String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  exercise    Exercise  @relation(fields: [exercise_id], references: [exercise_id], onDelete: NoAction)
+  user        User      @relation(fields: [user_id], references: [user_id], onDelete: NoAction)
+
+  @@id([user_id, exercise_id])
+}
+
+model UserSavedPost {
+  user_id   String
+  post_id   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  post      Post      @relation(fields: [post_id], references: [post_id], onDelete: NoAction)
+  user      User      @relation(fields: [user_id], references: [user_id], onDelete: NoAction)
+
+  @@id([user_id, post_id])
+}
+
+model UserSavedLibrary {
+  user_id    String
+  library_id String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+  library    Library   @relation(fields: [library_id], references: [library_id], onDelete: NoAction)
+  user       User      @relation(fields: [user_id], references: [user_id], onDelete: NoAction)
+
+  @@id([user_id, library_id])
+}
