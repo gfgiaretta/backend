@@ -1,0 +1,20 @@
+default:
+  image: node:22.15
+  before_script:
+    - npm ci 
+
+stages:
+  - test
+  - lint
+
+test:
+  stage: test
+  script:
+    - echo "Running jest tests"
+    - npm run test
+
+lint:
+  stage: lint
+  script:
+    - echo "Running linter"
+    - npm run lint

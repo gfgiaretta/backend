@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { PostResponseDTO } from '../dtos/postResponseDTO.dto';
-import { postOwnerResponseDTO } from 'src/dtos/postOwnerResponseDTO.dto';
+import { postOwnerResponseDTO, PostResponseDTO } from '../dtos/postDTO.dto';
+import { PresignedService } from './presigned.service';
+import { PostMapper } from '../mappers/post.mapper';
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private presignedService: PresignedService,
+  ) {}
 
   async getPostsWithSavedStatusPaginated(
     userId: string,
@@ -31,7 +35,7 @@ export class PostService {
           where: { user_id: item.owner_Id },
           select: {
             name: true,
-            profile_picture_url: true,
+            profile_picture_path: true,
           },
         });
 
@@ -39,16 +43,37 @@ export class PostService {
           post_id: item.post_id,
           owner: {
             name: owner?.name || '',
-            profile_picture_url: owner?.profile_picture_url || '',
+            profile_picture_url: await this.presignedService.getDownloadURL(
+              owner?.profile_picture_path || ''
+            ),
           } as postOwnerResponseDTO,
           title: item.title,
           description: item.description,
-          image_url: item.image_url,
+          image_url: await this.presignedService.getDownloadURL(item.image_url),
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           isSaved: item.user_savedPost.length > 0,
         } as PostResponseDTO;
       }),
     );
+  }
+
+  async createPost({
+    title,
+    description,
+    image,
+    userId,
+  }: {
+    title: string;
+    description: string;
+    image: string;
+    userId: string;
+  }): Promise<HttpStatus> {
+    const prismaData = PostMapper.toPrisma(
+      { title, description, image },
+      userId,
+    );
+    await this.prisma.post.create({ data: prismaData });
+    return HttpStatus.CREATED;
   }
 }

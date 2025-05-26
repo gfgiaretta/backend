@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Post,
   Req,
+  Patch,
 } from '@nestjs/common';
 import { CreateUserDto, StatisticsResponseDTO } from '../dtos/userDTO.dto';
 import { UserService } from '../services/user.service';
@@ -14,6 +15,7 @@ import { IsPublic } from '../auth/decorators/isPublic.decorator';
 import { AuthenticatedRequest } from '../dtos/authDTO.dto';
 import { StatisticsService } from '../services/statistics.service';
 import { UserInterestDto } from '../dtos/userInterestDTO.dto';
+import { UpdateProfileDto } from '../dtos/updateProfileDTO.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth('Authorization')
@@ -50,7 +52,6 @@ export class UserController {
   async getUserStatistics(
     @Req() req: AuthenticatedRequest,
   ): Promise<StatisticsResponseDTO> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const result = await this.statisticsService.getUserStatistics(
       req.payload.userId,
     );
@@ -70,6 +71,30 @@ export class UserController {
     return {
       statusCode: HttpStatus.OK,
       message: 'Interests updated successfully.',
+      data: result,
+    };
+  }
+
+  @Patch('/profile')
+  async updateUserProfile(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: UpdateProfileDto,
+  ) {
+    await this.userService.updateUserProfile(req.payload.userId, body);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Profile updated successfully.',
+    };
+  }
+
+  @Get('/profile')
+  async getUserProfile(@Req() req: AuthenticatedRequest) {
+    const result = await this.userService.getUserProfile(req.payload.userId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User profile retrieved successfully.',
       data: result,
     };
   }

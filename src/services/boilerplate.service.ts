@@ -25,7 +25,7 @@ export class BoilerplateService {
     email,
     password,
     description,
-    profile_picture_url,
+    profile_picture_path,
   }: UserDTO): Promise<HttpStatus> {
     let user: User | null = await this.prisma.user.findUnique({
       where: { email },
@@ -36,7 +36,7 @@ export class BoilerplateService {
     }
 
     const desc = description ? description : 'no description';
-    const picture = profile_picture_url ? profile_picture_url : 'no image';
+    const picture = profile_picture_path ? profile_picture_path : 'no image';
 
     user = await this.prisma.user.create({
       data: {
@@ -44,7 +44,7 @@ export class BoilerplateService {
         description: desc,
         email,
         password,
-        profile_picture_url: picture,
+        profile_picture_path: picture,
         streak: 0,
         createdAt: new Date(),
         updatedAt: new Date(),

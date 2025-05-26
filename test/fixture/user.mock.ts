@@ -17,7 +17,7 @@ export function mockUser({
     email: email || 'John.doe@domain.com',
     description: description || 'This is a description',
     password: 'Senh@123',
-    profile_picture_url: 'https://thispersondoesnotexist.com/',
+    profile_picture_path: 'https://thispersondoesnotexist.com/',
     streak: streak || 0,
     createdAt: createdAt || new Date('2025-02-24T17:30:00'),
     updatedAt: updatedAt || new Date('2025-02-24T17:30:00'),

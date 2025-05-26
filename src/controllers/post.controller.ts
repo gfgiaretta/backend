@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  Post,
+  Body,
   HttpException,
   HttpStatus,
   Param,
@@ -8,8 +10,9 @@ import {
 } from '@nestjs/common';
 import { AuthenticatedRequest } from '../dtos/authDTO.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { PostResponseDTO } from '../dtos/postResponseDTO.dto';
+import { PostResponseDTO } from '../dtos/postDTO.dto';
 import { PostService } from '../services/post.service';
+import { CreatePostDTO, CreatePostResponseDTO } from '../dtos/postDTO.dto';
 
 @ApiTags('Post')
 @ApiBearerAuth('Authorization')
@@ -36,5 +39,23 @@ export class PostController {
       Number(page),
       limit,
     );
+  }
+
+  @Post('/')
+  async createPost(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: CreatePostDTO,
+  ): Promise<CreatePostResponseDTO> {
+    const userId = req.payload.userId;
+
+    await this.postService.createPost({
+      ...body,
+      userId,
+    });
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Post created successfully.',
+    };
   }
 }

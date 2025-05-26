@@ -11,7 +11,11 @@ import {
 } from '../../../test/fixture/user.mock';
 import { HashService } from '../../services/hash.service';
 import { StatisticsService } from '../../services/statistics.service';
-import { StatisticsResponseDTO } from 'src/dtos/userDTO.dto';
+import { StatisticsResponseDTO } from '../../dtos/userDTO.dto';
+import { mockTestUserProfile } from '../../../test/fixture/userProfile.mock';
+import { PresignedService } from '../../services/presigned.service';
+
+jest.mock('@aws-sdk/client-s3');
 
 describe('UserController', () => {
   let userController: UserController;
@@ -30,6 +34,17 @@ describe('UserController', () => {
           useValue: {
             hash: jest.fn().mockResolvedValue('hashedPassword'),
             compare: jest.fn().mockResolvedValue(true),
+          },
+        },
+        {
+          provide: PresignedService,
+          useValue: {
+            getUploadURL: jest
+              .fn()
+              .mockResolvedValue('https://signedUploadUrl.com'),
+            getDownloadURL: jest
+              .fn()
+              .mockResolvedValue('https://signedDownloadUrl.com'),
           },
         },
       ],
@@ -89,7 +104,6 @@ describe('UserController', () => {
 
   describe('getUserStatistics', () => {
     it('should return user statistics', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const mockTestUserStatistics = {
         graph: {
           Criatividade: 2,
@@ -111,7 +125,6 @@ describe('UserController', () => {
         payload: { userId: '123' },
       } as AuthenticatedRequest;
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const result = await userController.getUserStatistics(mockRequest);
       expect(result).toEqual(mockTestUserStatistics);
     });
@@ -183,6 +196,42 @@ describe('UserController', () => {
           'One or more provided interest IDs do not exist.',
           HttpStatus.BAD_REQUEST,
         ),
+      );
+    });
+  });
+
+  describe('getUserProfile', () => {
+    it('should return user profile', async () => {
+      jest
+        .spyOn(userService, 'getUserProfile')
+        .mockResolvedValue(mockTestUserProfile);
+
+      const mockReq = {
+        payload: { userId: mockTestUser.user_id },
+      } as AuthenticatedRequest;
+
+      const result = await userController.getUserProfile(mockReq);
+
+      expect(result).toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'User profile retrieved successfully.',
+        data: mockTestUserProfile,
+      });
+    });
+
+    it('should throw error if user not found', async () => {
+      jest
+        .spyOn(userService, 'getUserProfile')
+        .mockRejectedValue(
+          new HttpException('User not found', HttpStatus.NOT_FOUND),
+        );
+
+      const mockReq = {
+        payload: { userId: 'invalid' },
+      } as AuthenticatedRequest;
+
+      await expect(userController.getUserProfile(mockReq)).rejects.toThrow(
+        new HttpException('User not found', HttpStatus.NOT_FOUND),
       );
     });
   });
