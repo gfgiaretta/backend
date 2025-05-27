@@ -186,7 +186,7 @@ describe('UserService', () => {
       );
     });
   });
-  
+
   describe('updateUserStreak', () => {
     it('should increase the user streak if they have done a streak in the last day', async () => {
       // TODO

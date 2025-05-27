@@ -52,6 +52,7 @@ export class UserController {
   async getUserStatistics(
     @Req() req: AuthenticatedRequest,
   ): Promise<StatisticsResponseDTO> {
+    await this.userService.updateUserStreak(req.payload.userId);
     const result = await this.statisticsService.getUserStatistics(
       req.payload.userId,
     );
@@ -80,6 +81,7 @@ export class UserController {
     @Req() req: AuthenticatedRequest,
     @Body() body: UpdateProfileDto,
   ) {
+    await this.userService.updateUserStreak(req.payload.userId);
     await this.userService.updateUserProfile(req.payload.userId, body);
 
     return {

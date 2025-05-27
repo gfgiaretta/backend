@@ -110,7 +110,7 @@ export class UserService {
       user: {
         userId: updatedUser.user_id,
         description: updatedUser.description,
-        profilePicturePath: updatedUser.profile_picture_path,
+        profilePicturePath: updatedUser.profile_picture_path as string,
       },
     };
   }
@@ -194,13 +194,20 @@ export class UserService {
     });
 
     let newStreak: number;
-    if (
-      latestExercise &&
-      new Date().getDate() - latestExercise.createdAt.getDate() <= 1
-    ) {
-      newStreak = user.streak + 1;
+    let daysSince: number;
+    if (latestExercise && latestExercise.createdAt) {
+      daysSince = new Date().getDate() - latestExercise.createdAt.getDate();
     } else {
+      const defaultDaysSince = 2;
+      daysSince = defaultDaysSince;
+    }
+
+    if (daysSince > 1) {
       newStreak = 0;
+    } else if (daysSince < 1) {
+      newStreak = user.streak;
+    } else {
+      newStreak = user.streak + 1;
     }
 
     const data = UserMapper.toPrismaUpdateStreak(newStreak);
