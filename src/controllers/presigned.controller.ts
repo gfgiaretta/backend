@@ -11,7 +11,7 @@ export class PresignedController {
 
   @Get('/')
   async getUploadURL(@Req() req: AuthenticatedRequest): Promise<string> {
-    const key = `${req.payload.userId}}/${Date.now()}.jpeg`;
+    const key = `${req.payload.userId}/${Date.now()}.jpeg`;
     return await this.presignedService.getUploadURL(key);
   }
 }
