@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { StatisticsResponseDTO } from '../dtos/userDTO.dto';
+import { StatisticsResponseDTO } from '../dtos/user.dto';
 @Injectable()
 export class StatisticsService {
   constructor(private readonly prisma: PrismaService) {}

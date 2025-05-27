@@ -6,7 +6,7 @@ import { HashService } from '../hash.service';
 import { mockPrismaClient } from '../../../test/fixture/prisma.mock';
 import { authMocks } from '../../../test/fixture/auth.mock';
 import { mockTestUser } from '../../../test/fixture/user.mock';
-import { LoginDTO } from '../../dtos/loginDTO.dto';
+import { LoginDTO } from '../../dtos/login.dto';
 import { HttpException } from '@nestjs/common';
 
 describe('AuthService - validateUser', () => {

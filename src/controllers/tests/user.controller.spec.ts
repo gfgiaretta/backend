@@ -4,14 +4,14 @@ import { UserService } from '../../services/user.service';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../../services/prisma.service';
 import { mockUserInterestDto } from '../../../test/fixture/user.mock';
-import { AuthenticatedRequest } from '../../dtos/authDTO.dto';
+import { AuthenticatedRequest } from '../../dtos/auth.dto';
 import {
   mockCreateUserDto,
   mockTestUser,
 } from '../../../test/fixture/user.mock';
 import { HashService } from '../../services/hash.service';
 import { StatisticsService } from '../../services/statistics.service';
-import { StatisticsResponseDTO } from '../../dtos/userDTO.dto';
+import { StatisticsResponseDTO } from 'src/dtos/user.dto';
 import { mockTestUserProfile } from '../../../test/fixture/userProfile.mock';
 import { PresignedService } from '../../services/presigned.service';
 

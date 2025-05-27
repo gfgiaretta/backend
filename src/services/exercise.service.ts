@@ -5,7 +5,7 @@ import { UserExerciseMapper } from '../mappers/userExercise.mapper';
 import {
   UserExerciseDTO,
   UserExerciseHistoryDTO,
-} from '../dtos/userExerciseDTO.dto';
+} from '../dtos/userExercise.dto';
 
 @Injectable()
 export class ExerciseService {

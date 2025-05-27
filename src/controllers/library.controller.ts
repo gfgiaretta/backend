@@ -1,8 +1,8 @@
 import { Controller, Get, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { LibraryResponseDTO } from '../dtos/libraryDTO.dto';
+import { LibraryResponseDTO } from '../dtos/library.dto';
 import { LibraryService } from '../services/library.service';
-import { AuthenticatedRequest } from '../dtos/authDTO.dto';
+import { AuthenticatedRequest } from '../dtos/auth.dto';
 
 @ApiTags('Library')
 @ApiBearerAuth('Authorization')

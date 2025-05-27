@@ -38,7 +38,7 @@ export class postOwnerResponseDTO {
   name: string;
 
   @ApiProperty({ example: 'https://thispersondoesnotexist.com/' })
-  profile_picture_url: string;
+  profile_picture_url: string | null;
 }
 
 export class PostResponseDTO {
