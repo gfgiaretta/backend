@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../../services/prisma.service';
 import { PostController } from '../post.controller';
-import { CreatePostDTO } from '../../dtos/postDTO.dto';
+import { CreatePostDTO, CreatePostResponseDTO } from '../../dtos/post.dto';
 import { PostService } from '../../services/post.service';
 import {
   mockTestPostResponse,
   mockTestPostResponseSaved,
-} from '../../../test/fixture/postResponse.mock';
-import { AuthenticatedRequest } from '../../dtos/authDTO.dto';
+} from '../../../test/fixture/post.mock';
+import { AuthenticatedRequest } from 'src/dtos/auth.dto';
 import { PresignedService } from '../../services/presigned.service';
 import { HttpStatus } from '@nestjs/common';
 
@@ -89,10 +89,12 @@ describe('PostController', () => {
 
       const mockCreatePost = jest
         .spyOn(postService, 'createPost')
-        // eslint-disable-next-line no-magic-numbers
-        .mockResolvedValue(201);
+        .mockResolvedValue(HttpStatus.CREATED);
 
-      const result = await postController.createPost(mockRequest, mockBody);
+      const result: CreatePostResponseDTO = await postController.createPost(
+        mockRequest,
+        mockBody,
+      );
 
       expect(mockCreatePost).toHaveBeenCalledWith({
         ...mockBody,

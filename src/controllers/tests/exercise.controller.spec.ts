@@ -2,12 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../../services/prisma.service';
 import { ExerciseController } from '../exercise.controller';
 import { ExerciseService } from '../../services/exercise.service';
-import { AuthenticatedRequest } from '../../dtos/authDTO.dto';
+import { AuthenticatedRequest } from '../../dtos/auth.dto';
 import {
   mockTestExercise,
   mockTestExerciseOtherDay,
 } from '../../../test/fixture/exercise.mock';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { UserModule } from '../../modules/user.module';
 
 describe('ExerciseController', () => {
   let exerciseController: ExerciseController;
@@ -15,6 +16,7 @@ describe('ExerciseController', () => {
 
   beforeEach(async () => {
     const testModule: TestingModule = await Test.createTestingModule({
+      imports: [UserModule],
       controllers: [ExerciseController],
       providers: [ExerciseService, PrismaService],
     }).compile();

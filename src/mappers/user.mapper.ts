@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { CreateUserDto } from '../dtos/userDTO.dto';
-import { UpdateProfileDto } from '../dtos/updateProfileDTO.dto';
+import { CreateUserDto, UpdateProfileDto } from '../dtos/user.dto';
 
 @Injectable()
 export class UserMapper {
@@ -23,6 +22,13 @@ export class UserMapper {
       ...(data.profilePictureUrl !== undefined && {
         profile_picture_path: data.profilePictureUrl,
       }),
+    };
+  }
+
+  static toPrismaUpdateStreak(streak: number): Prisma.UserUpdateInput {
+    return {
+      streak: streak,
+      updatedAt: new Date(),
     };
   }
 }

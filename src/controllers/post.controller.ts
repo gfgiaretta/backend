@@ -8,11 +8,11 @@ import {
   Param,
   Req,
 } from '@nestjs/common';
-import { AuthenticatedRequest } from '../dtos/authDTO.dto';
+import { AuthenticatedRequest } from '../dtos/auth.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { PostResponseDTO } from '../dtos/postDTO.dto';
+import { PostResponseDTO } from '../dtos/post.dto';
 import { PostService } from '../services/post.service';
-import { CreatePostDTO, CreatePostResponseDTO } from '../dtos/postDTO.dto';
+import { CreatePostDTO, CreatePostResponseDTO } from '../dtos/post.dto';
 
 @ApiTags('Post')
 @ApiBearerAuth('Authorization')

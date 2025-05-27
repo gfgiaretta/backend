@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
-import { PostResponseDTO } from './postDTO.dto';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Matches,
+} from 'class-validator';
+import { PostResponseDTO } from './post.dto';
 
 const passwordMessage =
   'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.';
@@ -92,8 +99,40 @@ export class UserProfileDTO {
   streak: number;
 
   @ApiProperty({ example: 'path/...' })
-  profile_picture_url: string;
+  profilePictureUrl: string;
 
   @ApiProperty()
   posts: PostResponseDTO[];
+}
+
+export class UserProfileResponseDTO {
+  userId: string;
+  description: string;
+  profilePicturePath: string | null;
+}
+
+export class UserStreakDTO {
+  @ApiProperty({ example: 5 })
+  streak: number;
+
+  @ApiProperty({ example: '2023-10-01T00:00:00.000Z' })
+  lastExerciseDate: Date | null;
+}
+
+export class UpdateProfileDto {
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    example: 'This is my new biography',
+    required: false,
+  })
+  description?: string;
+
+  @IsOptional()
+  @IsUrl()
+  @ApiProperty({
+    example: 'https://thispersondoesnotexist.com/',
+    required: false,
+  })
+  profilePictureUrl?: string;
 }

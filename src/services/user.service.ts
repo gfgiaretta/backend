@@ -1,12 +1,12 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { CreateUserDto, UserProfileDTO } from '../dtos/userDTO.dto';
+import { CreateUserDto, UserProfileDTO, UserStreakDTO } from '../dtos/user.dto';
 import { UserMapper } from '../mappers/user.mapper';
-import { UserInterestDto } from '../dtos/userInterestDTO.dto';
+import { UserInterestDto } from '../dtos/userInterest.dto';
 import { UserInterestMapper } from '../mappers/userInterest.mapper';
 import { HashService } from './hash.service';
-import { UpdateProfileDto } from '../dtos/updateProfileDTO.dto';
-import { PostResponseDTO } from '../dtos/postDTO.dto';
+import { UpdateProfileDto } from '../dtos/user.dto';
+import { PostResponseDTO } from '../dtos/post.dto';
 import { PresignedService } from './presigned.service';
 
 @Injectable()
@@ -108,12 +108,13 @@ export class UserService {
     });
     return {
       user: {
-        user_id: updatedUser.user_id,
+        userId: updatedUser.user_id,
         description: updatedUser.description,
         profilePicturePath: updatedUser.profile_picture_path,
       },
     };
   }
+
   async getUserProfile(userId: string): Promise<UserProfileDTO> {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -174,8 +175,59 @@ export class UserService {
       name: user.name,
       description: user.description,
       streak: user.streak,
-      profile_picture_url: profilePictureUrl,
+      profilePictureUrl: profilePictureUrl,
       posts: postResponseDTOs,
     } as UserProfileDTO;
+  }
+
+  async updateUserStreak(userId: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { user_id: userId, deletedAt: null },
+    });
+    if (!user) {
+      throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
+    }
+
+    const latestExercise = await this.prisma.userExercise.findFirst({
+      where: { user_id: userId, deletedAt: null },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    let newStreak: number;
+    if (
+      latestExercise &&
+      new Date().getDate() - latestExercise.createdAt.getDate() <= 1
+    ) {
+      newStreak = user.streak + 1;
+    } else {
+      newStreak = 0;
+    }
+
+    const data = UserMapper.toPrismaUpdateStreak(newStreak);
+    await this.prisma.user.update({
+      where: { user_id: userId },
+      data,
+    });
+  }
+
+  async getUserStreak(userId: string): Promise<UserStreakDTO> {
+    const user = await this.prisma.user.findUnique({
+      where: { user_id: userId, deletedAt: null },
+      select: { streak: true },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
+    }
+
+    const latestExercise = await this.prisma.userExercise.findFirst({
+      where: { user_id: userId },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return {
+      streak: user.streak,
+      lastExerciseDate: latestExercise?.createdAt || null,
+    };
   }
 }

@@ -15,5 +15,6 @@ import { PresignedService } from '../services/presigned.service';
     HashService,
     PresignedService,
   ],
+  exports: [UserService],
 })
 export class UserModule {}

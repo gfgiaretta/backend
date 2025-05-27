@@ -2,12 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma.service';
 import { PostService } from '../post.service';
 import {
-  mockTestPostResponse,
-  mockTestPostResponseSaved,
-} from '../../../test/fixture/postResponse.mock';
-import {
   mockTestPost,
   mockTestPostSaved,
+  mockTestPostResponse,
+  mockTestPostResponseSaved,
 } from '../../../test/fixture/post.mock';
 import { mockTestUser } from '../../../test/fixture/user.mock';
 import { HttpStatus } from '@nestjs/common';

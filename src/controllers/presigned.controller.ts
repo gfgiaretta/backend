@@ -1,7 +1,7 @@
 import { Controller, Get, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthenticatedRequest } from '../dtos/authDTO.dto';
-import { PresignedService } from 'src/services/presigned.service';
+import { AuthenticatedRequest } from '../dtos/auth.dto';
+import { PresignedService } from '../services/presigned.service';
 
 @ApiTags('Presigned')
 @ApiBearerAuth('Authorization')
