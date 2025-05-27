@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LibraryController } from '../library.controller';
 import { LibraryService } from '../../services/library.service';
-import { AuthenticatedRequest } from '../../dtos/authDTO.dto';
+import { AuthenticatedRequest } from '../../dtos/auth.dto';
 import {
   mockTestLibraryResponseSaved,
   mockTestLibraryResponse,

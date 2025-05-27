@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { postOwnerResponseDTO, PostResponseDTO } from '../dtos/postDTO.dto';
+import { PostResponseDTO, postOwnerResponseDTO } from '../dtos/post.dto';
 import { PresignedService } from './presigned.service';
 import { PostMapper } from '../mappers/post.mapper';
 
@@ -44,7 +44,8 @@ export class PostService {
           owner: {
             name: owner?.name || '',
             profile_picture_url: await this.presignedService.getDownloadURL(
-              owner?.profile_picture_path || ''
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              owner?.profile_picture_path || '',
             ),
           } as postOwnerResponseDTO,
           title: item.title,

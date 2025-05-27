@@ -1,8 +1,5 @@
-import { UserProfileDTO } from 'src/dtos/userDTO.dto';
-import {
-  mockTestPostResponse,
-  mockTestPostResponseSaved,
-} from './postResponse.mock';
+import { UserProfileDTO } from '../../src/dtos/user.dto';
+import { mockTestPostResponse, mockTestPostResponseSaved } from './post.mock';
 
 export function mockUserProfile({
   name,

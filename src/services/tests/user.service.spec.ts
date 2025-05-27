@@ -186,4 +186,41 @@ describe('UserService', () => {
       );
     });
   });
+  
+  describe('updateUserStreak', () => {
+    it('should increase the user streak if they have done a streak in the last day', async () => {
+      // TODO
+      expect(false).toBe(true);
+    });
+
+    it('should reset the user streak if they have not done a streak in the last day', async () => {
+      // TODO
+      expect(false).toBe(true);
+    });
+
+    it('should throw if user is not found', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(
+        service.updateUserStreak('nonExistentUserId'),
+      ).rejects.toThrow(
+        new HttpException('User not found.', HttpStatus.NOT_FOUND),
+      );
+    });
+  });
+
+  describe('getUserStreak', () => {
+    it('should retrieve the user streak', async () => {
+      // TODO
+      expect(false).toBe(true);
+    });
+
+    it('should throw if user is not found', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(service.getUserStreak('nonExistentUserId')).rejects.toThrow(
+        new HttpException('User not found.', HttpStatus.NOT_FOUND),
+      );
+    });
+  });
 });
