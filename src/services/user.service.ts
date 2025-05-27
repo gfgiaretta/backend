@@ -110,7 +110,7 @@ export class UserService {
       user: {
         userId: updatedUser.user_id,
         description: updatedUser.description,
-        profilePicturePath: updatedUser.profile_picture_path,
+        profilePicturePath: updatedUser.profile_picture_path as string,
       },
     };
   }
@@ -153,7 +153,7 @@ export class UserService {
         owner: {
           name: user?.name || '',
           profile_picture_url: await this.presignedService.getDownloadURL(
-            user.profile_picture_path ?? '',
+            (user.profile_picture_path ?? '') as string,
           ),
         },
         title: item.title,
@@ -168,7 +168,7 @@ export class UserService {
     );
 
     const profilePictureUrl = await this.presignedService.getDownloadURL(
-      user.profile_picture_path ?? '',
+      (user.profile_picture_path ?? '') as string,
     );
 
     return {
@@ -196,7 +196,7 @@ export class UserService {
     let newStreak: number;
     if (
       latestExercise &&
-      new Date().getDate() - latestExercise.createdAt.getDate() <= 1
+      new Date().getDate() - latestExercise.createdAt.getDate() === 1
     ) {
       newStreak = user.streak + 1;
     } else {
