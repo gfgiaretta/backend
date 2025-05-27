@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { postOwnerResponseDTO } from './postOwnerResponseDTO.dto';
+
+export class postOwnerResponseDTO {
+  @ApiProperty({ example: '9e2b3a8b-3e9f-44b3-b15e-4b7b3e3e3c9a' })
+  name: string;
+
+  @ApiProperty({ example: 'https://thispersondoesnotexist.com/' })
+  profile_picture_url: string | null;
+}
 
 export class PostResponseDTO {
   @ApiProperty({ example: 'f6c3a8b2-4f7d-4a9b-95d4-9c2e3a6e46d9' })

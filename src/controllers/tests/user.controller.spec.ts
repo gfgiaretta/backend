@@ -4,14 +4,14 @@ import { UserService } from '../../services/user.service';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../../services/prisma.service';
 import { mockUserInterestDto } from '../../../test/fixture/user.mock';
-import { AuthenticatedRequest } from '../../dtos/authDTO.dto';
+import { AuthenticatedRequest } from '../../dtos/auth.dto';
 import {
   mockCreateUserDto,
   mockTestUser,
 } from '../../../test/fixture/user.mock';
 import { HashService } from '../../services/hash.service';
 import { StatisticsService } from '../../services/statistics.service';
-import { StatisticsResponseDTO } from 'src/dtos/userDTO.dto';
+import { StatisticsResponseDTO } from 'src/dtos/user.dto';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -89,7 +89,6 @@ describe('UserController', () => {
 
   describe('getUserStatistics', () => {
     it('should return user statistics', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const mockTestUserStatistics = {
         graph: {
           Criatividade: 2,
@@ -111,7 +110,6 @@ describe('UserController', () => {
         payload: { userId: '123' },
       } as AuthenticatedRequest;
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const result = await userController.getUserStatistics(mockRequest);
       expect(result).toEqual(mockTestUserStatistics);
     });

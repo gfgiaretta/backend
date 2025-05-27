@@ -5,8 +5,8 @@ import { PostService } from '../../services/post.service';
 import {
   mockTestPostResponse,
   mockTestPostResponseSaved,
-} from '../../../test/fixture/postResponse.mock';
-import { AuthenticatedRequest } from 'src/dtos/authDTO.dto';
+} from '../../../test/fixture/post.mock';
+import { AuthenticatedRequest } from 'src/dtos/auth.dto';
 
 describe('PostController', () => {
   let postController: PostController;

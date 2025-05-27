@@ -1,8 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { CreateUserDto } from '../dtos/userDTO.dto';
+import { CreateUserDto, UserStreakDTO } from '../dtos/user.dto';
 import { UserMapper } from '../mappers/user.mapper';
-import { UserInterestDto } from '../dtos/userInterestDTO.dto';
+import { UserInterestDto } from '../dtos/userInterest.dto';
 import { UserInterestMapper } from '../mappers/userInterest.mapper';
 import { HashService } from './hash.service';
 
@@ -80,5 +80,56 @@ export class UserService {
     });
 
     return { userId, interests: interest };
+  }
+
+  async updateUserStreak(userId: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { user_id: userId, deletedAt: null },
+    });
+    if (!user) {
+      throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
+    }
+
+    const latestExercise = await this.prisma.userExercise.findFirst({
+      where: { user_id: userId, deletedAt: null },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    let newStreak: number;
+    if (
+      latestExercise &&
+      new Date().getDate() - latestExercise.createdAt.getDate() <= 1
+    ) {
+      newStreak = user.streak + 1;
+    } else {
+      newStreak = 0;
+    }
+
+    const data = UserMapper.toPrismaUpdateStreak(newStreak);
+    await this.prisma.user.update({
+      where: { user_id: userId },
+      data,
+    });
+  }
+
+  async getUserStreak(userId: string): Promise<UserStreakDTO> {
+    const user = await this.prisma.user.findUnique({
+      where: { user_id: userId, deletedAt: null },
+      select: { streak: true },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
+    }
+
+    const latestExercise = await this.prisma.userExercise.findFirst({
+      where: { user_id: userId },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return {
+      streak: user.streak,
+      lastExerciseDate: latestExercise?.createdAt || null,
+    };
   }
 }

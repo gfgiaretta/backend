@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { User } from '@prisma/client';
-import { UserDTO } from '../dtos/userDTO.dto';
+import { UserDTO } from '../dtos/user.dto';
 
 @Injectable()
 export class BoilerplateService {

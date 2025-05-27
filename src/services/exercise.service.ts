@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { Exercise } from '@prisma/client';
 import { UserExerciseMapper } from 'src/mappers/userExercise.mapper';
-import { UserExerciseDTO } from 'src/dtos/userExerciseDTO.dto';
+import { UserExerciseDTO } from 'src/dtos/userExercise.dto';
 
 @Injectable()
 export class ExerciseService {

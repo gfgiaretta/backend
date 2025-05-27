@@ -7,13 +7,13 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
-import { CreateUserDto, StatisticsResponseDTO } from '../dtos/userDTO.dto';
+import { CreateUserDto, StatisticsResponseDTO } from '../dtos/user.dto';
 import { UserService } from '../services/user.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../auth/decorators/isPublic.decorator';
-import { AuthenticatedRequest } from '../dtos/authDTO.dto';
+import { AuthenticatedRequest } from '../dtos/auth.dto';
 import { StatisticsService } from '../services/statistics.service';
-import { UserInterestDto } from '../dtos/userInterestDTO.dto';
+import { UserInterestDto } from '../dtos/userInterest.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth('Authorization')
@@ -50,7 +50,6 @@ export class UserController {
   async getUserStatistics(
     @Req() req: AuthenticatedRequest,
   ): Promise<StatisticsResponseDTO> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const result = await this.statisticsService.getUserStatistics(
       req.payload.userId,
     );
@@ -72,5 +71,10 @@ export class UserController {
       message: 'Interests updated successfully.',
       data: result,
     };
+  }
+
+  @Get('/streak')
+  async getUserStreak(@Req() req: AuthenticatedRequest) {
+    return await this.userService.getUserStreak(req.payload.userId);
   }
 }

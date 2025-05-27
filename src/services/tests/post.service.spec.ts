@@ -2,18 +2,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma.service';
 import { PostService } from '../post.service';
 import {
-  mockTestPostResponse,
-  mockTestPostResponseSaved,
-} from '../../../test/fixture/postResponse.mock';
-import {
   mockTestPost,
   mockTestPostSaved,
+  mockTestPostResponse,
+  mockTestPostResponseSaved,
 } from '../../../test/fixture/post.mock';
 import { mockTestUser } from '../../../test/fixture/user.mock';
 
 describe('PostService', () => {
   let service: PostService;
   let prisma: PrismaService;
+
+  const postsPerPage = 10;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,7 +35,7 @@ describe('PostService', () => {
     const result = await service.getPostsWithSavedStatusPaginated(
       '2140b95c-9de6-46b3-a86f-1047fc9278e9',
       1,
-      10,
+      postsPerPage,
     );
     expect(result).toEqual([]);
   });
@@ -50,7 +50,7 @@ describe('PostService', () => {
     const result = await service.getPostsWithSavedStatusPaginated(
       '2140b95c-9de6-46b3-a86f-1047fc9278e9',
       1,
-      10,
+      postsPerPage,
     );
     expect(result).toEqual([mockTestPostResponse, mockTestPostResponseSaved]);
   });
@@ -62,7 +62,7 @@ describe('PostService', () => {
     const result = await service.getPostsWithSavedStatusPaginated(
       'b60b728d450146a1bbb4836ed61c93c7',
       1,
-      10,
+      postsPerPage,
     );
     expect(result).toEqual([mockTestPostResponseSaved]);
     expect(result[0].isSaved).toBe(true);
@@ -75,7 +75,7 @@ describe('PostService', () => {
     const result = await service.getPostsWithSavedStatusPaginated(
       '2140b95c-9de6-46b3-a86f-1047fc9278e9',
       1,
-      10,
+      postsPerPage,
     );
     expect(result[0].isSaved).toBe(false);
     expect(result).toEqual([mockTestPostResponse]);

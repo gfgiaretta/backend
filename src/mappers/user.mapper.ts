@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { CreateUserDto } from '../dtos/userDTO.dto';
+import { CreateUserDto } from '../dtos/user.dto';
 
 @Injectable()
 export class UserMapper {
@@ -13,6 +13,13 @@ export class UserMapper {
       email: data.email,
       password: hashedPassword,
       streak: 0,
+    };
+  }
+
+  static toPrismaUpdateStreak(streak: number): Prisma.UserUpdateInput {
+    return {
+      streak: streak,
+      updatedAt: new Date(),
     };
   }
 }

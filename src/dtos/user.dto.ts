@@ -79,3 +79,11 @@ export class StatisticsResponseDTO {
   @ApiProperty({ example: 8 })
   savedItems: number;
 }
+
+export class UserStreakDTO {
+  @ApiProperty({ example: 5 })
+  streak: number;
+
+  @ApiProperty({ example: '2023-10-01T00:00:00.000Z' })
+  lastExerciseDate: Date | null;
+}

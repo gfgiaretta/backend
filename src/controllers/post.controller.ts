@@ -6,9 +6,9 @@ import {
   Param,
   Req,
 } from '@nestjs/common';
-import { AuthenticatedRequest } from '../dtos/authDTO.dto';
+import { AuthenticatedRequest } from '../dtos/auth.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { PostResponseDTO } from '../dtos/postResponseDTO.dto';
+import { PostResponseDTO } from '../dtos/post.dto';
 import { PostService } from '../services/post.service';
 
 @ApiTags('Post')

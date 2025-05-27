@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
-import { UserInterestDto } from '../../src/dtos/userInterestDTO.dto';
-import { CreateUserDto } from '../../src/dtos/userDTO.dto';
+import { UserInterestDto } from '../../src/dtos/userInterest.dto';
+import { CreateUserDto } from '../../src/dtos/user.dto';
 
 export function mockUser({
   name,
