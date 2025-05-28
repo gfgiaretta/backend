@@ -1,16 +1,7 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpStatus,
-  Get,
-  Req,
-  Param,
-} from '@nestjs/common';
+import { Controller, Post, HttpStatus, Get, Req, Param } from '@nestjs/common';
 import { ExerciseService } from '../services/exercise.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Exercise } from '@prisma/client';
-import { UserExerciseDTO } from '../dtos/userExercise.dto';
 import { AuthenticatedRequest } from '../dtos/auth.dto';
 import { UserService } from '../services/user.service';
 
@@ -40,12 +31,21 @@ export class ExerciseController {
     return this.exerciseService.getExerciseById(id);
   }
 
-  @Post('/register')
+  @Post('/register/:exerciseId')
+  @ApiParam({
+    name: 'exerciseId',
+    required: true,
+    description: 'ID of the exercise to register',
+    type: String,
+    example: 'd63094d4-cc58-434a-9fd0-7227430793a1',
+  })
   async registerExercise(
-    @Body() userExercise: UserExerciseDTO,
+    @Req() req: AuthenticatedRequest,
+    @Param('exerciseId') exerciseId: string,
   ): Promise<HttpStatus> {
-    const response = await this.exerciseService.registerExercise(userExercise);
-    await this.userService.updateUserStreak(userExercise.userId);
-    return response;
+    return await this.exerciseService.registerExercise(
+      req.payload.userId,
+      exerciseId,
+    );
   }
 }
