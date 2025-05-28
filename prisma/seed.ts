@@ -5,6 +5,12 @@ import { v4 as uuidv4 } from 'uuid';
 const prisma = new PrismaClient();
 const hashService = new HashService();
 
+const createDatePast = (daysAgo: number): Date => {
+  const newDate = new Date();
+  newDate.setDate(newDate.getDate() - daysAgo);
+  return newDate;
+};
+
 async function main() {
   await prisma.user.createMany({
     data: [
@@ -14,8 +20,7 @@ async function main() {
         description: 'Ages II.',
         email: 'lucas@example.com',
         password: await hashService.hash('lucas123'),
-        profile_picture_path:
-          'profile2.jpg',
+        profile_picture_path: 'profile2.jpg',
         streak: 2,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -40,9 +45,9 @@ async function main() {
         email: 'eduardo@example.com',
         password: await hashService.hash('eduardo123'),
         profile_picture_path: 'profile2.jpg',
-        streak: 8,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        streak: 4,
+        createdAt: createDatePast(4),
+        updatedAt: createDatePast(1),
         deletedAt: null,
       },
     ],
@@ -63,6 +68,15 @@ async function main() {
     },
   });
   if (!user2) {
+    throw new Error('Usuário não encontrado!');
+  }
+
+  const user3 = await prisma.user.findUnique({
+    where: {
+      email: 'eduardo@example.com',
+    },
+  });
+  if (!user3) {
     throw new Error('Usuário não encontrado!');
   }
 
@@ -103,6 +117,7 @@ async function main() {
   };
   const designId = getInterestId('Design');
   const escritaId = getInterestId('Escrita');
+  const musicaId = getInterestId('Música');
 
   await prisma.exercise.createMany({
     data: [
@@ -132,6 +147,58 @@ async function main() {
         updatedAt: new Date(),
         deletedAt: null,
       },
+      {
+        exercise_id: uuidv4(),
+        type: 'Inversão',
+        interest_id: designId,
+        title: 'Desenhe somente com uma cor!',
+        description:
+          'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
+        text_field: ['Natureza', 'Animais'],
+        image_url: 'https://example.com/images/world.jpg',
+        createdAt: createDatePast(1),
+        updatedAt: createDatePast(1),
+        deletedAt: null,
+      },
+      {
+        exercise_id: uuidv4(),
+        type: 'Inversão',
+        interest_id: designId,
+        title: 'Que tal inverter as coisas?',
+        description:
+          'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
+        text_field: ['Natureza', 'Animais'],
+        image_url: 'https://example.com/images/world.jpg',
+        createdAt: createDatePast(2),
+        updatedAt: createDatePast(2),
+        deletedAt: null,
+      },
+      {
+        exercise_id: uuidv4(),
+        type: 'Inversão',
+        interest_id: designId,
+        title: 'Desenhe seu maior sonho',
+        description:
+          'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
+        text_field: ['Natureza', 'Animais'],
+        image_url: 'https://example.com/images/world.jpg',
+        createdAt: createDatePast(3),
+        updatedAt: createDatePast(3),
+        deletedAt: null,
+      },
+      {
+        exercise_id: uuidv4(),
+        type: 'Inversão',
+        interest_id: designId,
+        title: 'Vamos criar uma logo?',
+        description:
+          'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
+        text_field: ['Natureza', 'Animais'],
+        image_url: 'https://example.com/images/world.jpg',
+        createdAt: createDatePast(4),
+        updatedAt: createDatePast(4),
+        deletedAt: null,
+      },
     ],
   });
 
@@ -145,8 +212,24 @@ async function main() {
     return exercise.exercise_id;
   }
 
+  async function getExercisesIdByInterest(
+    interest_id: string,
+  ): Promise<string[]> {
+    const exercises = await prisma.exercise.findMany({
+      where: { interest_id },
+    });
+    if (!exercises) {
+      throw new Error(
+        `Exercício com interesse "${interest_id}" não encontrado!`,
+      );
+    }
+    const exercises_ids = exercises.map((ex) => ex.exercise_id);
+    return exercises_ids;
+  }
+
   const gratidaoId = await getExerciseIdByTitle('Jornada da Gratidão');
   const mundoIdealId = await getExerciseIdByTitle('Desenhe seu mundo ideal');
+  const designExercisesId = await getExercisesIdByInterest(designId);
 
   await prisma.post.createMany({
     data: [
@@ -155,8 +238,7 @@ async function main() {
         owner_Id: user.user_id,
         title: 'Explorando a Criatividade Diária',
         description: 'Compartilho minha jornada com exercícios criativos!',
-        image_url:
-          'post1.jpg',
+        image_url: 'post1.jpg',
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -166,8 +248,7 @@ async function main() {
         owner_Id: user2.user_id,
         title: 'Sketchbook Digital #1',
         description: 'Alguns rascunhos do meu novo app!',
-        image_url:
-          'post2.jpg',
+        image_url: 'post2.jpg',
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -258,6 +339,30 @@ async function main() {
         user_id: user2.user_id,
         exercise_id: mundoIdealId,
       },
+      {
+        user_id: user3.user_id,
+        exercise_id: designExercisesId[1],
+        createdAt: createDatePast(1),
+        updatedAt: createDatePast(1),
+      },
+      {
+        user_id: user3.user_id,
+        exercise_id: designExercisesId[2],
+        createdAt: createDatePast(2),
+        updatedAt: createDatePast(2),
+      },
+      {
+        user_id: user3.user_id,
+        exercise_id: designExercisesId[3],
+        createdAt: createDatePast(3),
+        updatedAt: createDatePast(3),
+      },
+      {
+        user_id: user3.user_id,
+        exercise_id: designExercisesId[4],
+        createdAt: createDatePast(4),
+        updatedAt: createDatePast(4),
+      },
     ],
   });
 
@@ -296,6 +401,18 @@ async function main() {
       {
         user_id: user2.user_id,
         interest_id: escritaId,
+      },
+      {
+        user_id: user3.user_id,
+        interest_id: escritaId,
+      },
+      {
+        user_id: user3.user_id,
+        interest_id: designId,
+      },
+      {
+        user_id: user3.user_id,
+        interest_id: musicaId,
       },
     ],
   });

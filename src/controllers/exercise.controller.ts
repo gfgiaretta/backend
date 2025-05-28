@@ -44,7 +44,8 @@ export class ExerciseController {
   async registerExercise(
     @Body() userExercise: UserExerciseDTO,
   ): Promise<HttpStatus> {
+    const response = await this.exerciseService.registerExercise(userExercise);
     await this.userService.updateUserStreak(userExercise.userId);
-    return await this.exerciseService.registerExercise(userExercise);
+    return response;
   }
 }

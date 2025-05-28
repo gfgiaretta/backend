@@ -202,19 +202,32 @@ export class UserService {
       daysSince = defaultDaysSince;
     }
 
-    if (daysSince > 1) {
-      newStreak = 0;
-    } else if (daysSince < 1) {
-      newStreak = user.streak;
+    if (latestExercise) {
+      if (daysSince > 1) {
+        newStreak = 0;
+      } else if (daysSince < 1) {
+        if (latestExercise.createdAt.getDate() !== user.updatedAt.getDate()) {
+          newStreak = user.streak + 1;
+        } else {
+          newStreak = user.streak;
+        }
+      } else {
+        if (latestExercise.createdAt.getDate() !== user.updatedAt.getDate()) {
+          newStreak = user.streak + 1;
+        } else {
+          newStreak = user.streak;
+        }
+      }
     } else {
-      newStreak = user.streak + 1;
+      newStreak = 0;
     }
-
-    const data = UserMapper.toPrismaUpdateStreak(newStreak);
-    await this.prisma.user.update({
-      where: { user_id: userId },
-      data,
-    });
+    if (newStreak !== user.streak) {
+      const data = UserMapper.toPrismaUpdateStreak(newStreak);
+      await this.prisma.user.update({
+        where: { user_id: userId },
+        data,
+      });
+    }
   }
 
   async getUserStreak(userId: string): Promise<UserStreakDTO> {
