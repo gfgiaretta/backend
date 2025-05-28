@@ -1,12 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../../services/prisma.service';
 import { PostController } from '../post.controller';
+import { CreatePostDTO, CreatePostResponseDTO } from '../../dtos/post.dto';
 import { PostService } from '../../services/post.service';
 import {
   mockTestPostResponse,
   mockTestPostResponseSaved,
-} from '../../../test/fixture/postResponse.mock';
-import { AuthenticatedRequest } from 'src/dtos/authDTO.dto';
+} from '../../../test/fixture/post.mock';
+import { AuthenticatedRequest } from 'src/dtos/auth.dto';
+import { PresignedService } from '../../services/presigned.service';
+import { HttpStatus } from '@nestjs/common';
+
+jest.mock('@aws-sdk/client-s3');
 
 describe('PostController', () => {
   let postController: PostController;
@@ -15,7 +20,21 @@ describe('PostController', () => {
   beforeEach(async () => {
     const testModule: TestingModule = await Test.createTestingModule({
       controllers: [PostController],
-      providers: [PostService, PrismaService],
+      providers: [
+        PostService,
+        PrismaService,
+        {
+          provide: PresignedService,
+          useValue: {
+            getUploadURL: jest
+              .fn()
+              .mockResolvedValue('https://signedUploadUrl.com'),
+            getDownloadURL: jest
+              .fn()
+              .mockResolvedValue('https://signedDownloadUrl.com'),
+          },
+        },
+      ],
     }).compile();
 
     postController = testModule.get<PostController>(PostController);
@@ -53,6 +72,38 @@ describe('PostController', () => {
       const result = await postController.getPosts(mockRequest, 1);
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('createPost', () => {
+    it('should create a post successfully', async () => {
+      const mockRequest = {
+        payload: { userId: 'user-id-123' },
+      } as AuthenticatedRequest;
+
+      const mockBody: CreatePostDTO = {
+        title: 'Test Post',
+        description: 'Test Description',
+        image: 'https://example.com/image.jpg',
+      };
+
+      const mockCreatePost = jest
+        .spyOn(postService, 'createPost')
+        .mockResolvedValue(HttpStatus.CREATED);
+
+      const result: CreatePostResponseDTO = await postController.createPost(
+        mockRequest,
+        mockBody,
+      );
+
+      expect(mockCreatePost).toHaveBeenCalledWith({
+        ...mockBody,
+        userId: 'user-id-123',
+      });
+      expect(result).toEqual({
+        statusCode: HttpStatus.CREATED,
+        message: 'Post created successfully.',
+      });
     });
   });
 

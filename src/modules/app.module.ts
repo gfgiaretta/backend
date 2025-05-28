@@ -7,6 +7,7 @@ import { UserModule } from 'src/modules/user.module';
 import { LibraryModule } from './library.module';
 import { ExerciseModule } from './exercise.module';
 import { PostModule } from './post.module';
+import { PresignedModule } from './presigned.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PostModule } from './post.module';
     LibraryModule,
     UserModule,
     PostModule,
+    PresignedModule,
   ],
   controllers: [],
   providers: [

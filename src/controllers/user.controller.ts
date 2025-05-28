@@ -6,14 +6,16 @@ import {
   HttpStatus,
   Post,
   Req,
+  Patch,
 } from '@nestjs/common';
-import { CreateUserDto, StatisticsResponseDTO } from '../dtos/userDTO.dto';
+import { CreateUserDto, StatisticsResponseDTO } from '../dtos/user.dto';
 import { UserService } from '../services/user.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../auth/decorators/isPublic.decorator';
-import { AuthenticatedRequest } from '../dtos/authDTO.dto';
+import { AuthenticatedRequest } from '../dtos/auth.dto';
 import { StatisticsService } from '../services/statistics.service';
-import { UserInterestDto } from '../dtos/userInterestDTO.dto';
+import { UserInterestDto } from '../dtos/userInterest.dto';
+import { UpdateProfileDto } from '../dtos/user.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth('Authorization')
@@ -50,7 +52,7 @@ export class UserController {
   async getUserStatistics(
     @Req() req: AuthenticatedRequest,
   ): Promise<StatisticsResponseDTO> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    await this.userService.updateUserStreak(req.payload.userId);
     const result = await this.statisticsService.getUserStatistics(
       req.payload.userId,
     );
@@ -72,5 +74,35 @@ export class UserController {
       message: 'Interests updated successfully.',
       data: result,
     };
+  }
+
+  @Patch('/profile')
+  async updateUserProfile(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: UpdateProfileDto,
+  ) {
+    await this.userService.updateUserStreak(req.payload.userId);
+    await this.userService.updateUserProfile(req.payload.userId, body);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Profile updated successfully.',
+    };
+  }
+
+  @Get('/profile')
+  async getUserProfile(@Req() req: AuthenticatedRequest) {
+    const result = await this.userService.getUserProfile(req.payload.userId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User profile retrieved successfully.',
+      data: result,
+    };
+  }
+
+  @Get('/streak')
+  async getUserStreak(@Req() req: AuthenticatedRequest) {
+    return await this.userService.getUserStreak(req.payload.userId);
   }
 }

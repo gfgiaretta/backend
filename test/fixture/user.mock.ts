@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
-import { UserInterestDto } from '../../src/dtos/userInterestDTO.dto';
-import { CreateUserDto } from '../../src/dtos/userDTO.dto';
+import { UserInterestDto } from '../../src/dtos/userInterest.dto';
+import { CreateUserDto } from '../../src/dtos/user.dto';
 
 export function mockUser({
   name,
@@ -17,7 +17,7 @@ export function mockUser({
     email: email || 'John.doe@domain.com',
     description: description || 'This is a description',
     password: 'Senh@123',
-    profile_picture_url: 'https://thispersondoesnotexist.com/',
+    profile_picture_path: 'https://thispersondoesnotexist.com/',
     streak: streak || 0,
     createdAt: createdAt || new Date('2025-02-24T17:30:00'),
     updatedAt: updatedAt || new Date('2025-02-24T17:30:00'),

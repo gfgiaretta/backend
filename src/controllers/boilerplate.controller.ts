@@ -11,7 +11,7 @@ import { BoilerplateService } from '../services/boilerplate.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../auth/decorators/isPublic.decorator';
 import { User } from '@prisma/client';
-import { UserDTO } from '../dtos/userDTO.dto';
+import { UserDTO } from '../dtos/user.dto';
 
 @ApiTags('Boilerplates') // Swagger Tag
 @ApiBearerAuth('Authorization') // Swagger Bearer Auth

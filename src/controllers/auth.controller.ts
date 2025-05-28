@@ -12,8 +12,8 @@ import {
   AccessTokenDTO,
   AuthenticatedRequest,
   AuthenticatedUserDTO,
-} from '../dtos/authDTO.dto';
-import { LoginDTO } from '../dtos/loginDTO.dto';
+} from '../dtos/auth.dto';
+import { LoginDTO } from '../dtos/login.dto';
 import { IsPublic } from '../auth/decorators/isPublic.decorator';
 import { AuthService } from '../services/auth.service';
 

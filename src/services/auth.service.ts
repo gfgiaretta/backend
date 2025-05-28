@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthPayload } from '../auth/auth.guard';
-import { LoginDTO } from '../dtos/loginDTO.dto';
-import { AccessTokenDTO, AuthenticatedUserDTO } from '../dtos/authDTO.dto';
+import { LoginDTO } from '../dtos/login.dto';
+import { AccessTokenDTO, AuthenticatedUserDTO } from '../dtos/auth.dto';
 import { PrismaService } from './prisma.service';
 import * as dotenv from 'dotenv';
 import { HashService } from './hash.service';
