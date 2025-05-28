@@ -10,3 +10,17 @@ export class UserExerciseDTO {
   @IsString()
   exerciseId: string;
 }
+
+export class UserExerciseHistoryDTO {
+  @ApiProperty({ example: 'Jornada da Gratidão' })
+  title: string;
+
+  @ApiProperty({ example: 'Aqui a ideia é exercitar...' })
+  description: string;
+
+  @ApiProperty({ example: 'Escrita' })
+  interest: string;
+
+  @ApiProperty({ example: '2025-04-01T12:00:00Z' })
+  performedAt: Date;
+}

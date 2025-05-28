@@ -12,7 +12,6 @@ services:
       - creative-flow
     env_file:
       - .env
-
     depends_on:
       - database
 

@@ -12,10 +12,19 @@ import {
   mockInterestList,
 } from '../../../test/fixture/interest.mock';
 import { HashService } from '../hash.service';
+import { PresignedService } from '../presigned.service';
+import {
+  mockTestPost,
+  mockTestPostSaved,
+} from '../../../test/fixture/post.mock';
+import { mockTestUserProfile } from '../../../test/fixture/userProfile.mock';
+
+jest.mock('@aws-sdk/client-s3');
 
 describe('UserService', () => {
   let service: UserService;
   let prisma: PrismaService;
+  let presignedService: PresignedService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,11 +38,23 @@ describe('UserService', () => {
             compare: jest.fn().mockResolvedValue(true),
           },
         },
+        {
+          provide: PresignedService,
+          useValue: {
+            getUploadURL: jest
+              .fn()
+              .mockResolvedValue('https://signedUploadUrl.com'),
+            getDownloadURL: jest
+              .fn()
+              .mockResolvedValue('https://signedDownloadUrl.com'),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
     prisma = module.get<PrismaService>(PrismaService);
+    presignedService = module.get<PresignedService>(PresignedService);
   });
 
   describe('create', () => {
@@ -136,6 +157,69 @@ describe('UserService', () => {
           'One or more provided interest IDs do not found.',
           HttpStatus.BAD_REQUEST,
         ),
+      );
+    });
+  });
+
+  describe('getUserProfile', () => {
+    it('should return user profile', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
+      jest
+        .spyOn(prisma.post, 'findMany')
+        .mockResolvedValue([mockTestPost, mockTestPostSaved]);
+      jest
+        .spyOn(presignedService, 'getDownloadURL')
+        .mockResolvedValue('https://example.com/presigned-url');
+
+      const result = await service.getUserProfile(mockTestUser.user_id);
+
+      expect(result).toEqual(mockTestUserProfile);
+    });
+
+    it('should throw exception if user not found', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(
+        service.getUserProfile(mockTestUser.user_id),
+      ).rejects.toThrow(
+        new HttpException('User not found.', HttpStatus.NOT_FOUND),
+      );
+    });
+  });
+
+  describe('updateUserStreak', () => {
+    it('should increase the user streak if they have done a streak in the last day', async () => {
+      // TODO
+      expect(false).toBe(true);
+    });
+
+    it('should reset the user streak if they have not done a streak in the last day', async () => {
+      // TODO
+      expect(false).toBe(true);
+    });
+
+    it('should throw if user is not found', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(
+        service.updateUserStreak('nonExistentUserId'),
+      ).rejects.toThrow(
+        new HttpException('User not found.', HttpStatus.NOT_FOUND),
+      );
+    });
+  });
+
+  describe('getUserStreak', () => {
+    it('should retrieve the user streak', async () => {
+      // TODO
+      expect(false).toBe(true);
+    });
+
+    it('should throw if user is not found', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(service.getUserStreak('nonExistentUserId')).rejects.toThrow(
+        new HttpException('User not found.', HttpStatus.NOT_FOUND),
       );
     });
   });

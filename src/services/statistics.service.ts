@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { StatisticsResponseDTO } from '../dtos/userDTO.dto';
+import { StatisticsResponseDTO } from '../dtos/user.dto';
 @Injectable()
 export class StatisticsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -41,13 +41,14 @@ export class StatisticsService {
     const interestCounts: Record<string, number> = {};
     const calendarData: Record<string, string> = {};
 
-    exercises.forEach((ex, index) => {
+    exercises.forEach((ex) => {
       const interestTitle = ex.exercise.interest.title;
+      const execution_day = new Date(ex.createdAt).getUTCDate();
 
       if (interestTitle) {
         interestCounts[interestTitle] =
           (interestCounts[interestTitle] || 0) + 1;
-        calendarData[(index + 1).toString()] = interestTitle;
+        calendarData[execution_day.toString()] = interestTitle;
       }
     });
 
