@@ -13,7 +13,8 @@ interface PresignedClient {
   getDownloadURL(key: string): Promise<string>;
 }
 
-const EXPIRES_IN_SECONDS: number = 60;
+const UPLOAD_EXPIRATION_IN_SECONDS: number = 60;
+const DOWNLOAD_EXPIRATION_IN_SECONDS: number = 600;
 
 export class PresignedService implements PresignedClient {
   private client: S3Client;
@@ -45,7 +46,7 @@ export class PresignedService implements PresignedClient {
     });
 
     return await getSignedUrl(this.client, command, {
-      expiresIn: EXPIRES_IN_SECONDS,
+      expiresIn: UPLOAD_EXPIRATION_IN_SECONDS,
     });
   };
 
@@ -60,7 +61,7 @@ export class PresignedService implements PresignedClient {
     });
 
     return await getSignedUrl(this.client, command, {
-      expiresIn: EXPIRES_IN_SECONDS,
+      expiresIn: DOWNLOAD_EXPIRATION_IN_SECONDS,
     });
   };
 }

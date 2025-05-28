@@ -129,9 +129,9 @@ export class UpdateProfileDto {
   description?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   @ApiProperty({
-    example: 'https://thispersondoesnotexist.com/',
+    example: '2344231-2432-2442-234234/17283883.jpeg',
     required: false,
   })
   profilePictureUrl?: string;
