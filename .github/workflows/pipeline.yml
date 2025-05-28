@@ -1,0 +1,33 @@
+name: pipeline
+
+on:
+  pull_request:
+    branches: [dev]
+
+permissions:
+  contents: write
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unit tests
+        run: echo "Unit tests"
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint
+        run: echo "Lint"
+
+  pipeline:
+    needs:
+      - unit-tests
+      - lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Dev
+        run: echo "Dev Stage completed!"
