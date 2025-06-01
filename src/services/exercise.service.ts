@@ -86,10 +86,6 @@ export class ExerciseService {
       },
     });
 
-    if (exercisesReturned.length === 0) {
-      throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
-    }
-
     return exercisesReturned;
   }
 
