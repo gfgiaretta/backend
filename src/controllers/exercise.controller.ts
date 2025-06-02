@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpStatus,
-  Get,
-  Req,
-  Param,
-} from '@nestjs/common';
+import { Controller, Post, HttpStatus, Get, Req, Param } from '@nestjs/common';
 import { ExerciseService } from '../services/exercise.service';
 import { ApiParam, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Exercise } from '@prisma/client';
