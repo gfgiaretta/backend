@@ -167,9 +167,6 @@ describe('UserService', () => {
       jest
         .spyOn(prisma.post, 'findMany')
         .mockResolvedValue([mockTestPost, mockTestPostSaved]);
-      jest
-        .spyOn(presignedService, 'getDownloadURL')
-        .mockResolvedValue('https://example.com/presigned-url');
 
       const result = await service.getUserProfile(mockTestUser.user_id);
 

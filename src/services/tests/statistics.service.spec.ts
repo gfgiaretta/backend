@@ -21,6 +21,16 @@ const mockPrismaService = {
 describe('StatisticsService', () => {
   let statisticsService: StatisticsService;
 
+  const fixedDate = new Date('2025-05-15T12:00:00Z');
+
+  beforeAll(() => {
+    jest.useFakeTimers().setSystemTime(fixedDate);
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -50,12 +60,15 @@ describe('StatisticsService', () => {
 
     mockPrismaService.userExercise.findMany.mockResolvedValue([
       {
+        createdAt: new Date('2025-05-01T12:00:00Z'),
         exercise: { interest: { title: 'Criatividade' } },
       },
       {
+        createdAt: new Date('2025-05-02T12:00:00Z'),
         exercise: { interest: { title: 'Comunicacao' } },
       },
       {
+        createdAt: new Date('2025-05-03T12:00:00Z'),
         exercise: { interest: { title: 'Criatividade' } },
       },
     ]);

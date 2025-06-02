@@ -21,6 +21,7 @@ describe('UserController', () => {
   let userController: UserController;
   let userService: UserService;
   let statisticsService: StatisticsService;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -53,6 +54,7 @@ describe('UserController', () => {
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
     statisticsService = module.get<StatisticsService>(StatisticsService);
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
@@ -104,6 +106,7 @@ describe('UserController', () => {
 
   describe('getUserStatistics', () => {
     it('should return user statistics', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
       const mockTestUserStatistics = {
         graph: {
           Criatividade: 2,
@@ -146,7 +149,7 @@ describe('UserController', () => {
         expect(error).toBeInstanceOf(HttpException);
         if (error instanceof HttpException) {
           expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
-          expect(error.getResponse()).toEqual('User not found');
+          expect(error.getResponse()).toEqual('User not found.');
         }
       }
     });
