@@ -26,6 +26,7 @@ export function mockUser({
 }
 
 export const mockTestUser: User = mockUser({
+  user_id: 'b60b728d450146a1bbb4836ed61c93c7',
   name: 'John Doe',
   email: 'John.doe@domain.com',
 });
