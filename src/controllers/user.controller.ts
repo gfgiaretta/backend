@@ -105,4 +105,15 @@ export class UserController {
   async getUserStreak(@Req() req: AuthenticatedRequest) {
     return await this.userService.getUserStreak(req.payload.userId);
   }
+
+  @Get('/savedItems')
+  async getUserSavedItems(@Req() req: AuthenticatedRequest) {
+    const result = await this.userService.getUserSavedItems(req.payload.userId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User saved items retrieved sucessfully',
+      data: result,
+    };
+  }
 }
