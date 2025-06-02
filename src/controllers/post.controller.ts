@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Put,
   Post,
   Body,
   HttpException,
@@ -9,8 +10,12 @@ import {
   Req,
 } from '@nestjs/common';
 import { AuthenticatedRequest } from '../dtos/auth.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { PostResponseDTO } from '../dtos/post.dto';
+import { ApiBearerAuth, ApiTags, ApiResponse } from '@nestjs/swagger';
+import {
+  PostResponseDTO,
+  SavePostDTO,
+  SavePostResponseDTO,
+} from '../dtos/post.dto';
 import { PostService } from '../services/post.service';
 import { CreatePostDTO, CreatePostResponseDTO } from '../dtos/post.dto';
 
@@ -56,6 +61,37 @@ export class PostController {
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Post created successfully.',
+    };
+  }
+
+  @Put('/')
+  @ApiResponse({
+    status: 201,
+    description: 'Post saved successfully.',
+    type: SavePostResponseDTO,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Post ID is required or post already saved.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User or Post not found.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  async savePost(
+    @Body() body: SavePostDTO,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<SavePostResponseDTO> {
+    const userId = req.payload.userId;
+
+    await this.postService.savePost(userId, body.postId);
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Post saved successfully.',
     };
   }
 }

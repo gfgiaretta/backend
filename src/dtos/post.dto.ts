@@ -1,6 +1,6 @@
 import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreatePostDTO {
   @ApiProperty({
@@ -69,5 +69,21 @@ export class PostResponseDTO {
   updatedAt: Date;
 
   @ApiProperty({ example: true })
+  isSaved: boolean;
+}
+export class SavePostResponseDTO {
+  @ApiProperty({ example: 201 })
+  statusCode: number;
+
+  @ApiProperty({ example: 'Post saved successfully.' })
+  message: string;
+}
+
+export class SavePostDTO {
+  @ApiProperty({ example: 'f6c3a8b2-4f7d-4a9b-95d4-9c2e3a6e46d9' })
+  @IsString()
+  postId: string;
+  @ApiProperty({ example: 'true' })
+  @IsBoolean()
   isSaved: boolean;
 }
