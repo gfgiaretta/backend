@@ -24,7 +24,6 @@ jest.mock('@aws-sdk/client-s3');
 describe('UserService', () => {
   let service: UserService;
   let prisma: PrismaService;
-  let presignedService: PresignedService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -54,7 +53,6 @@ describe('UserService', () => {
 
     service = module.get<UserService>(UserService);
     prisma = module.get<PrismaService>(PrismaService);
-    presignedService = module.get<PresignedService>(PresignedService);
   });
 
   describe('create', () => {
