@@ -14,6 +14,7 @@ import { UserModule } from '../../modules/user.module';
 describe('ExerciseController', () => {
   let exerciseController: ExerciseController;
   let exerciseService: ExerciseService;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const testModule: TestingModule = await Test.createTestingModule({
@@ -24,6 +25,7 @@ describe('ExerciseController', () => {
 
     exerciseController = testModule.get<ExerciseController>(ExerciseController);
     exerciseService = testModule.get<ExerciseService>(ExerciseService);
+    prisma = testModule.get<PrismaService>(PrismaService);
   });
 
   describe('getExercises', () => {
@@ -71,6 +73,7 @@ describe('ExerciseController', () => {
     const exerciseId = mockTestExercise.exercise_id;
 
     it('should return HttpStatus.CREATED if registration succeeds', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
       jest
         .spyOn(exerciseService, 'registerExercise')
         .mockResolvedValue(HttpStatus.CREATED);
