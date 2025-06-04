@@ -53,6 +53,7 @@ export class ExerciseService {
       description: item.exercise.description,
       interest: item.exercise.interest.title,
       performedAt: item.createdAt,
+      content: item.content,
     }));
   }
 
