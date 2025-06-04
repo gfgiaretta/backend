@@ -334,34 +334,40 @@ async function main() {
       {
         user_id: user.user_id,
         exercise_id: gratidaoId,
+        content: 'content',
       },
       {
         user_id: user2.user_id,
         exercise_id: mundoIdealId,
+        content: 'content',
       },
       {
         user_id: user3.user_id,
         exercise_id: designExercisesId[1],
         createdAt: createDatePast(1),
         updatedAt: createDatePast(1),
+        content: 'content',
       },
       {
         user_id: user3.user_id,
         exercise_id: designExercisesId[2],
         createdAt: createDatePast(2),
         updatedAt: createDatePast(2),
+        content: 'content',
       },
       {
         user_id: user3.user_id,
         exercise_id: designExercisesId[3],
         createdAt: createDatePast(3),
         updatedAt: createDatePast(3),
+        content: 'content',
       },
       {
         user_id: user3.user_id,
         exercise_id: designExercisesId[4],
         createdAt: createDatePast(4),
         updatedAt: createDatePast(4),
+        content: 'content',
       },
     ],
   });
