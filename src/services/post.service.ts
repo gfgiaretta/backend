@@ -113,7 +113,7 @@ export class PostService {
         if (alreadyExists.deletedAt === null) {
           return HttpStatus.NO_CONTENT;
         } else {
-          const data = PostMapper.toPrismaUpdateDate();
+          const data = PostMapper.toPrismaUpdateDate(false);
           await this.prisma.userSavedPost.update({
             where: {
               user_id_post_id: {
@@ -137,6 +137,17 @@ export class PostService {
     } else {
       if (alreadyExists) {
         if (alreadyExists.deletedAt === null) {
+          const data = PostMapper.toPrismaUpdateDate(true);
+          await this.prisma.userSavedPost.update({
+            where: {
+              user_id_post_id: {
+                user_id: userId,
+                post_id: postId,
+              },
+            },
+            data,
+          });
+          return HttpStatus.OK;
         } else {
           return HttpStatus.NO_CONTENT;
         }
