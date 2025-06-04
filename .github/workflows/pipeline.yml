@@ -53,7 +53,7 @@ jobs:
               EOF
 
       - name: setup
-        run: npm run setup
+        run: npm ci
       - name: Lint
         run: npm run lint
 
