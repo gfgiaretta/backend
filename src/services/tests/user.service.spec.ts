@@ -219,7 +219,7 @@ describe('UserService', () => {
 
       expect(updateSpy).toHaveBeenCalledTimes(1);
 
-      const calledArgs = updateSpy.mock.calls[0][0]; // pega os argumentos da chamada
+      const calledArgs = updateSpy.mock.calls[0][0];
       expect(calledArgs).toMatchObject({
         where: { user_id: user.user_id },
         data: { streak: 2 },
