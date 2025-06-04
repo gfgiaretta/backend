@@ -13,15 +13,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3.9.1
+        with:
+          node-version: 22.x
+      - name: setup
+        run: npm ci
       - name: Unit tests
-        run: echo "Unit tests"
+        run: npm run test
 
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3.9.1
+        with:
+          node-version: 22.x
+      - name: setup
+        run: npm run setup
       - name: Lint
-        run: echo "Lint"
+        run: npm run lint
 
   pipeline:
     needs:
