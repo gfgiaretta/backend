@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Post } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { PostResponseDTO, postOwnerResponseDTO } from '../dtos/post.dto';
 import { PresignedService } from './presigned.service';
@@ -78,7 +78,11 @@ export class PostService {
     return HttpStatus.CREATED;
   }
 
-  async savePost(userId: string, postId: string): Promise<void> {
+  async savePost(
+    userId: string,
+    postId: string,
+    save: boolean,
+  ): Promise<HttpStatus> {
     const user = await this.prisma.user.findUnique({
       where: { user_id: userId },
     });
@@ -104,18 +108,41 @@ export class PostService {
       },
     });
 
-    if (alreadyExists) {
-      throw new HttpException(
-        'Post already saved by this user.',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (save) {
+      if (alreadyExists) {
+        if (alreadyExists.deletedAt === null) {
+          return HttpStatus.NO_CONTENT;
+        } else {
+          const data = PostMapper.toPrismaUpdateDate();
+          await this.prisma.userSavedPost.update({
+            where: {
+              user_id_post_id: {
+                user_id: userId,
+                post_id: postId,
+              },
+            },
+            data,
+          });
+          return HttpStatus.OK;
+        }
+      } else {
+        await this.prisma.userSavedPost.create({
+          data: {
+            user: { connect: { user_id: userId } },
+            post: { connect: { post_id: postId } },
+          },
+        });
+        return HttpStatus.OK;
+      }
+    } else {
+      if (alreadyExists) {
+        if (alreadyExists.deletedAt === null) {
+        } else {
+          return HttpStatus.NO_CONTENT;
+        }
+      } else {
+        return HttpStatus.NOT_FOUND;
+      }
     }
-
-    await this.prisma.userSavedPost.create({
-      data: {
-        user: { connect: { user_id: userId } },
-        post: { connect: { post_id: postId } },
-      },
-    });
   }
 }

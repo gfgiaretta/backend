@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, UserSavedPost } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { CreatePostDTO } from '../dtos/post.dto';
 
@@ -14,6 +14,13 @@ export class PostMapper {
           user_id: userId,
         },
       },
+    };
+  }
+
+  static toPrismaUpdateDate(): Prisma.UserSavedPostUpdateInput {
+    return {
+      deletedAt: null,
+      updatedAt: new Date(),
     };
   }
 }

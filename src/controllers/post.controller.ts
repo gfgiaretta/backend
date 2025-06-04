@@ -64,31 +64,14 @@ export class PostController {
     };
   }
 
-  @Put('/')
-  @ApiResponse({
-    status: 201,
-    description: 'Post saved successfully.',
-    type: SavePostResponseDTO,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Post ID is required or post already saved.',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'User or Post not found.',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
+  @Put('/save')
   async savePost(
     @Body() body: SavePostDTO,
     @Req() req: AuthenticatedRequest,
   ): Promise<SavePostResponseDTO> {
     const userId = req.payload.userId;
 
-    await this.postService.savePost(userId, body.postId);
+    await this.postService.savePost(userId, body.postId, body.save);
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Post saved successfully.',
