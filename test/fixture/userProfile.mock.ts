@@ -11,7 +11,7 @@ export function mockUserProfile({
     name: name || 'John Doe',
     description: description || 'This is a description',
     streak: streak || 0,
-    profilePictureUrl: profilePictureUrl || 'https://example.com/presigned-url',
+    profilePictureUrl: profilePictureUrl || 'https://signedDownloadUrl.com',
     posts: [mockTestPostResponse, mockTestPostResponseSaved],
   };
 }

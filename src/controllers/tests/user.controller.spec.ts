@@ -21,6 +21,7 @@ describe('UserController', () => {
   let userController: UserController;
   let userService: UserService;
   let statisticsService: StatisticsService;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -53,6 +54,7 @@ describe('UserController', () => {
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
     statisticsService = module.get<StatisticsService>(StatisticsService);
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
@@ -104,6 +106,7 @@ describe('UserController', () => {
 
   describe('getUserStatistics', () => {
     it('should return user statistics', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
       const mockTestUserStatistics = {
         graph: {
           Criatividade: 2,
@@ -118,6 +121,10 @@ describe('UserController', () => {
       } as StatisticsResponseDTO;
 
       jest
+        .spyOn(userService, 'updateUserStreak')
+        .mockImplementation(() => Promise.resolve());
+
+      jest
         .spyOn(statisticsService, 'getUserStatistics')
         .mockResolvedValue(mockTestUserStatistics);
 
@@ -129,16 +136,20 @@ describe('UserController', () => {
       expect(result).toEqual(mockTestUserStatistics);
     });
 
-    it('should propagate error from service if user not found', async () => {
+    it('should propagate error from service if user not found.', async () => {
       jest
         .spyOn(statisticsService, 'getUserStatistics')
         .mockRejectedValue(
-          new HttpException('User not found', HttpStatus.NOT_FOUND),
+          new HttpException('User not found.', HttpStatus.NOT_FOUND),
         );
 
       const mockRequest = {
         payload: { userId: 'invalid' },
       } as AuthenticatedRequest;
+
+      jest
+        .spyOn(userService, 'updateUserStreak')
+        .mockImplementation(() => Promise.resolve());
 
       try {
         await userController.getUserStatistics(mockRequest);
@@ -146,7 +157,7 @@ describe('UserController', () => {
         expect(error).toBeInstanceOf(HttpException);
         if (error instanceof HttpException) {
           expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
-          expect(error.getResponse()).toEqual('User not found');
+          expect(error.getResponse()).toEqual('User not found.');
         }
       }
     });
@@ -219,11 +230,11 @@ describe('UserController', () => {
       });
     });
 
-    it('should throw error if user not found', async () => {
+    it('should throw error if user not found.', async () => {
       jest
         .spyOn(userService, 'getUserProfile')
         .mockRejectedValue(
-          new HttpException('User not found', HttpStatus.NOT_FOUND),
+          new HttpException('User not found.', HttpStatus.NOT_FOUND),
         );
 
       const mockReq = {
@@ -231,7 +242,7 @@ describe('UserController', () => {
       } as AuthenticatedRequest;
 
       await expect(userController.getUserProfile(mockReq)).rejects.toThrow(
-        new HttpException('User not found', HttpStatus.NOT_FOUND),
+        new HttpException('User not found.', HttpStatus.NOT_FOUND),
       );
     });
   });
