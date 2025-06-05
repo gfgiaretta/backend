@@ -24,7 +24,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly statisticsService: StatisticsService,
-  ) {}
+  ) { }
 
   @IsPublic()
   @Post('/register')
@@ -104,5 +104,26 @@ export class UserController {
   @Get('/streak')
   async getUserStreak(@Req() req: AuthenticatedRequest) {
     return await this.userService.getUserStreak(req.payload.userId);
+  }
+
+  @Get('/savedItems')
+  async getUserSavedItems(@Req() req: AuthenticatedRequest) {
+    try {
+      const result = await this.userService.getUserSavedItems(req.payload.userId);
+
+      if (result.length === 0) {
+        return {
+          statusCode: HttpStatus.NO_CONTENT,
+          message: 'No saved items found.',
+        };
+      }
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'User saved items retrieved successfully',
+        data: result,
+      };
+    } catch (error) {
+      throw new HttpException('An unexpected error occurred', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

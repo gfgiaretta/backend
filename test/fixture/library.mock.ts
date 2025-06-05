@@ -1,5 +1,5 @@
 import { Library, UserSavedLibrary } from '@prisma/client';
-import { LibraryResponseDTO } from '../../src/dtos/libraryDTO.dto';
+import { LibraryResponseDTO } from 'src/dtos/library.dto';
 
 export function mockLibrary({
   library_id,

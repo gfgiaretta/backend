@@ -14,6 +14,8 @@ import { StatisticsService } from '../../services/statistics.service';
 import { StatisticsResponseDTO } from 'src/dtos/user.dto';
 import { mockTestUserProfile } from '../../../test/fixture/userProfile.mock';
 import { PresignedService } from '../../services/presigned.service';
+import { mockTestPostSaved } from '../../../test/fixture/post.mock';
+import { mockTestLibrarySaved } from '../../../test/fixture/library.mock';
 
 jest.mock('@aws-sdk/client-s3');
 
@@ -196,6 +198,40 @@ describe('UserController', () => {
           'One or more provided interest IDs do not exist.',
           HttpStatus.BAD_REQUEST,
         ),
+      );
+    });
+  });
+
+  describe('getUserSavedItems', () => {
+    it('should return no content http status', async () => {
+
+      jest.spyOn(userService, 'getUserSavedItems').mockResolvedValue([]);
+
+      const mockReq = {
+        payload: { userId: '123' },
+      } as AuthenticatedRequest;
+
+      const result = await userController.getUserSavedItems(mockReq);
+
+      expect(result).toEqual({
+        statusCode: HttpStatus.NO_CONTENT,
+        message: 'No saved items found.',
+      });
+    });
+
+    it('should throw internal server error', async () => {
+      jest
+        .spyOn(userService, 'getUserSavedItems')
+        .mockRejectedValue(
+          new HttpException('An unexpected error occurred', HttpStatus.INTERNAL_SERVER_ERROR)
+        );
+
+      const mockReq = {
+        payload: { userId: '123' },
+      } as AuthenticatedRequest;
+
+      await expect(userController.getUserSavedItems(mockReq)).rejects.toThrow(
+        new HttpException('An unexpected error occurred', HttpStatus.INTERNAL_SERVER_ERROR),
       );
     });
   });
