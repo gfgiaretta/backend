@@ -51,7 +51,7 @@ describe('StatisticsService', () => {
     await expect(
       statisticsService.getUserStatistics('nonexistent-id'),
     ).rejects.toThrowError(
-      new HttpException('User not found', HttpStatus.NOT_FOUND),
+      new HttpException('User not found.', HttpStatus.NOT_FOUND),
     );
   });
 

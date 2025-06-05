@@ -172,7 +172,7 @@ describe('UserService', () => {
       expect(result).toEqual(mockTestUserProfile);
     });
 
-    it('should throw exception if user not found', async () => {
+    it('should throw exception if user not found.', async () => {
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
 
       await expect(
