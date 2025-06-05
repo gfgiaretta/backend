@@ -253,6 +253,7 @@ export class UserService {
 
 function diffDays(d1: Date, d2: Date): number {
   const diff = d1.getTime() - d2.getTime();
+  // eslint-disable-next-line no-magic-numbers
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 

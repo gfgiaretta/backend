@@ -121,6 +121,10 @@ describe('UserController', () => {
       } as StatisticsResponseDTO;
 
       jest
+        .spyOn(userService, 'updateUserStreak')
+        .mockImplementation(() => Promise.resolve());
+
+      jest
         .spyOn(statisticsService, 'getUserStatistics')
         .mockResolvedValue(mockTestUserStatistics);
 
