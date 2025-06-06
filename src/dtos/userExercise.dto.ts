@@ -9,6 +9,10 @@ export class UserExerciseDTO {
   @ApiProperty({ example: '0b171ebe-9f75-40e8-9dad-1f667fc12ac5' })
   @IsString()
   exerciseId: string;
+
+  @ApiProperty({ example: 'content json' })
+  @IsString()
+  content: string;
 }
 
 export class UserExerciseHistoryDTO {
@@ -23,4 +27,7 @@ export class UserExerciseHistoryDTO {
 
   @ApiProperty({ example: '2025-04-01T12:00:00Z' })
   performedAt: Date;
+
+  @ApiProperty({ example: 'content json' })
+  content: string;
 }

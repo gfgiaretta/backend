@@ -53,6 +53,7 @@ export class ExerciseService {
       description: item.exercise.description,
       interest: item.exercise.interest.title,
       performedAt: item.createdAt,
+      content: item.content,
     }));
   }
 
@@ -96,6 +97,7 @@ export class ExerciseService {
   async registerExercise({
     userId,
     exerciseId,
+    content,
   }: UserExerciseDTO): Promise<HttpStatus> {
     const exercise = await this.prisma.exercise.findUnique({
       where: { exercise_id: exerciseId },
@@ -114,6 +116,7 @@ export class ExerciseService {
     const userExercise = UserExerciseMapper.toPrisma(
       user.user_id,
       exercise.exercise_id,
+      content,
     );
     await this.prisma.userExercise.create({ data: userExercise });
     return HttpStatus.CREATED;
