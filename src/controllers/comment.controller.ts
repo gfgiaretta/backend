@@ -18,7 +18,7 @@ export class CommentController {
   }
 
   @Patch(':id')
-  async deleteComment(@Param('commentId') commentId: string) {
+  async deleteComment(@Param('id') commentId: string) {
     return await this.commentService.deleteComment(commentId);
   }
 
