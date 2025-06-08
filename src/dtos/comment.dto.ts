@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUrl, isURL } from 'class-validator';
+import { isNotEmpty, IsNotEmpty, IsString, IsUrl, isURL } from 'class-validator';
 
 export class CommentOwnerDTO {
   @ApiProperty({
@@ -31,6 +31,18 @@ export class GetCommentResponseDTO {
   @ApiProperty({
     example: 'Comment\'s body!',
   })
+  @IsNotEmpty()
+  @IsString()
+  content: string;
+}
+
+export class CreateCommentDTO {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  postId: string;
+
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   content: string;

@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CommentService } from '../services/comment.service';
-import { GetCommentResponseDTO } from 'src/dtos/comment.dto';
+import { CreateCommentDTO, GetCommentResponseDTO } from 'src/dtos/comment.dto';
 import { IsPublic } from 'src/auth/decorators/isPublic.decorator';
+import { AuthenticatedRequest } from 'src/dtos/auth.dto';
 
 @ApiTags('Comment')
 @ApiBearerAuth('Authorization')
@@ -15,4 +16,23 @@ export class CommentController {
   async getUploadURL(@Query('post_id') post_id: string): Promise<GetCommentResponseDTO[]> {
     return await this.commentService.getComments(post_id);
   }
+
+  @Patch(':id')
+  async deleteComment(@Param('commentId') commentId: string) {
+    return await this.commentService.deleteComment(commentId);
+  }
+
+  @Post('/')
+    async createComment(
+      @Req() req: AuthenticatedRequest,
+      @Body() body: CreateCommentDTO,
+    ): Promise<void> {
+      const userId = req.payload.userId;
+  
+      await this.commentService.createComment({
+        ...body,
+        userId,
+      });
+
+    }
 }

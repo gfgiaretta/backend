@@ -24,6 +24,7 @@ model User {
   user_interest        UserInterest[]
   user_savedLibrary    UserSavedLibrary[]
   user_savedPost       UserSavedPost[]
+  user_comments        Comment[]
 }
 
 model Interest {
@@ -62,6 +63,7 @@ model Post {
   deletedAt      DateTime?
   user           User            @relation(fields: [owner_Id], references: [user_id], onDelete: NoAction)
   user_savedPost UserSavedPost[]
+  post_comments  Comment[]
 }
 
 model Library {
@@ -131,4 +133,6 @@ model Comment {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   deletedAt  DateTime?
+  user       User      @relation(fields: [user_id], references: [user_id])
+  post       Post      @relation(fields: [post_id], references: [post_id])
 }
