@@ -87,6 +87,13 @@ export class PostService {
       where: { user_id: userId },
     });
 
+    if (!postId || typeof save !== 'boolean') {
+      throw new HttpException(
+        'postId e save são obrigatórios.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     if (!user) {
       throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }
@@ -109,11 +116,14 @@ export class PostService {
     });
 
     if (save) {
+      console.log('Entrei no save');
       if (alreadyExists) {
         if (alreadyExists.deletedAt === null) {
+          console.log('Entrei no deletAt null');
           return HttpStatus.NO_CONTENT;
         } else {
           const data = PostMapper.toPrismaUpdateDate(false);
+          console.log('Entrei no deletAt true');
           await this.prisma.userSavedPost.update({
             where: {
               user_id_post_id: {
@@ -132,11 +142,13 @@ export class PostService {
             post: { connect: { post_id: postId } },
           },
         });
+        console.log('Entrei no ok, pq criei ja q nao existia');
         return HttpStatus.OK;
       }
     } else {
       if (alreadyExists) {
         if (alreadyExists.deletedAt === null) {
+          console.log('Entrei no deleteAt doq nao esta salvo');
           const data = PostMapper.toPrismaUpdateDate(true);
           await this.prisma.userSavedPost.update({
             where: {
@@ -149,9 +161,11 @@ export class PostService {
           });
           return HttpStatus.OK;
         } else {
+          console.log('Entrei no nao salvo nao ha mudancas');
           return HttpStatus.NO_CONTENT;
         }
       } else {
+        console.log('Entrei no caso nao haja');
         return HttpStatus.NOT_FOUND;
       }
     }

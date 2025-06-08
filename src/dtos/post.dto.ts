@@ -83,7 +83,7 @@ export class SavePostDTO {
   @ApiProperty({ example: 'f6c3a8b2-4f7d-4a9b-95d4-9c2e3a6e46d9' })
   @IsString()
   postId: string;
-  @ApiProperty({ example: 'true' })
+  @ApiProperty({ example: true })
   @IsBoolean()
   save: boolean;
 }
