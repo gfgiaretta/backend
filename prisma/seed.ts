@@ -416,6 +416,26 @@ async function main() {
       },
     ],
   });
+
+  await prisma.comment.createMany({
+    data: [
+      {
+        user_id: user2.user_id,
+        post_id: postId,
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      },
+      {
+        user_id: user3.user_id,
+        post_id: postId,
+        content: "Teste 2 🎨"
+      },
+      {
+        user_id: user.user_id,
+        post_id: postId2,
+        content: "Hehe"
+      },
+    ],
+  });
 }
 
 main()

@@ -122,3 +122,13 @@ model UserSavedLibrary {
 
   @@id([user_id, library_id])
 }
+
+model Comment {
+  comment_id String    @id @default(uuid())
+  post_id    String
+  user_id    String
+  content    String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+}
