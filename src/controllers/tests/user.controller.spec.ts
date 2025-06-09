@@ -14,8 +14,6 @@ import { StatisticsService } from '../../services/statistics.service';
 import { StatisticsResponseDTO } from 'src/dtos/user.dto';
 import { mockTestUserProfile } from '../../../test/fixture/userProfile.mock';
 import { PresignedService } from '../../services/presigned.service';
-import { mockTestPostSaved } from '../../../test/fixture/post.mock';
-import { mockTestLibrarySaved } from '../../../test/fixture/library.mock';
 
 jest.mock('@aws-sdk/client-s3');
 

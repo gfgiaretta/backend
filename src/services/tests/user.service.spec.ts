@@ -210,41 +210,63 @@ describe('UserService', () => {
     });
   });
 
-describe('getUserSavedItems', () => {
-  it('should return a list with saved post and library ordered by updatedAt', async () => {
-    const mockUserId = mockTestUser.user_id;
+  describe('getUserSavedItems', () => {
+    it('should return a list with saved post and library ordered by updatedAt', async () => {
+      const mockUserId = mockTestUser.user_id;
 
-    jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
-      user_savedLibrary: [
-        {
-          library: mockTestLibrarySaved,
-          deletedAt: null,
-        },
-      ],
-      user_savedPost: [
-        {
-          post: mockTestPostSaved,
-          deletedAt: null,
-        },
-      ],
-    } as any);
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
+        user_savedLibrary: [
+          {
+            library: mockTestLibrarySaved,
+            deletedAt: null,
+          },
+        ],
+        user_savedPost: [
+          {
+            post: mockTestPostSaved,
+            deletedAt: null,
+          },
+        ],
+      } as any);
 
-    jest.spyOn(presignedService, 'getDownloadURL').mockResolvedValue('https://example.com/presigned-url');
+      jest.spyOn(presignedService, 'getDownloadURL').mockResolvedValue('https://example.com/presigned-url');
 
-    const result = await service.getUserSavedItems(mockUserId);
+      const result = await service.getUserSavedItems(mockUserId);
 
-    expect(Array.isArray(result)).toBe(true);
-    expect(result.length).toBe(2);
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(2);
 
-    const hasPost = result.some(item => 'post_id' in item);
-    const hasLibrary = result.some(item => 'library_id' in item);
+      const hasPost = result.some(item => 'post_id' in item);
+      const hasLibrary = result.some(item => 'library_id' in item);
 
-    expect(hasPost).toBe(true);
-    expect(hasLibrary).toBe(true);
+      expect(hasPost).toBe(true);
+      expect(hasLibrary).toBe(true);
 
-    expect(result[0].updatedAt.getTime()).toBeGreaterThanOrEqual(result[1].updatedAt.getTime());
+      expect(result[0].updatedAt.getTime()).toBeGreaterThanOrEqual(result[1].updatedAt.getTime());
+    });
+
+    it('should return an empty array', async () => {
+      const mockUserId = mockTestUser.user_id;
+
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
+        user_savedLibrary: [],
+        user_savedPost: [],
+      } as any);
+
+      jest.spyOn(presignedService, 'getDownloadURL').mockResolvedValue('https://example.com/presigned-url');
+
+      const result = await service.getUserSavedItems(mockUserId);
+
+      expect(result).toEqual([]);
+    });
+    it('should throw an exception if user is not found', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(service.getUserStreak('nonExistentUserId')).rejects.toThrow(
+        new HttpException('User not found.', HttpStatus.NOT_FOUND),
+      );
+    });
   });
-});
 
   describe('getUserStreak', () => {
     it('should retrieve the user streak', async () => {
