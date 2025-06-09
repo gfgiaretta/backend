@@ -25,11 +25,10 @@ export class PostMapper {
         deletedAt: new Date(),
         updatedAt: new Date(),
       };
-    } else {
-      return {
-        deletedAt: null,
-        updatedAt: new Date(),
-      };
     }
+    return {
+      deletedAt: null,
+      updatedAt: new Date(),
+    };
   }
 }

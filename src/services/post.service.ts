@@ -48,7 +48,6 @@ export class PostService {
           owner: {
             name: owner?.name || '',
             profile_picture_url: await this.presignedService.getDownloadURL(
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               owner?.profile_picture_path || '',
             ),
           } as postOwnerResponseDTO,
@@ -126,63 +125,58 @@ export class PostService {
             statusCode: HttpStatus.NO_CONTENT,
             message: 'Nenhuma modificação foi necessária.',
           } as SavePostResponseDTO;
-        } else {
-          const data = PostMapper.toPrismaUpdateDate(false);
-          await this.prisma.userSavedPost.update({
-            where: {
-              user_id_post_id: {
-                user_id: userId,
-                post_id: postId,
-              },
-            },
-            data,
-          });
-          return {
-            statusCode: HttpStatus.OK,
-            message: 'Post salvo com sucesso.',
-          } as SavePostResponseDTO;
         }
-      } else {
-        await this.prisma.userSavedPost.create({
-          data: {
-            user: { connect: { user_id: userId } },
-            post: { connect: { post_id: postId } },
+        const data = PostMapper.toPrismaUpdateDate(false);
+        await this.prisma.userSavedPost.update({
+          where: {
+            user_id_post_id: {
+              user_id: userId,
+              post_id: postId,
+            },
           },
+          data,
         });
         return {
           statusCode: HttpStatus.OK,
           message: 'Post salvo com sucesso.',
         } as SavePostResponseDTO;
       }
-    } else {
-      if (alreadyExists) {
-        if (alreadyExists.deletedAt === null) {
-          const data = PostMapper.toPrismaUpdateDate(true);
-          await this.prisma.userSavedPost.update({
-            where: {
-              user_id_post_id: {
-                user_id: userId,
-                post_id: postId,
-              },
+      await this.prisma.userSavedPost.create({
+        data: {
+          user: { connect: { user_id: userId } },
+          post: { connect: { post_id: postId } },
+        },
+      });
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Post salvo com sucesso.',
+      } as SavePostResponseDTO;
+    }
+    if (alreadyExists) {
+      if (alreadyExists.deletedAt === null) {
+        const data = PostMapper.toPrismaUpdateDate(true);
+        await this.prisma.userSavedPost.update({
+          where: {
+            user_id_post_id: {
+              user_id: userId,
+              post_id: postId,
             },
-            data,
-          });
-          return {
-            statusCode: HttpStatus.OK,
-            message: 'Post removido com sucesso.',
-          } as SavePostResponseDTO;
-        } else {
-          return {
-            statusCode: HttpStatus.NO_CONTENT,
-            message: 'Nenhuma modificação foi necessária.',
-          } as SavePostResponseDTO;
-        }
-      } else {
+          },
+          data,
+        });
         return {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: 'Post salvo não encontrado para remoção.',
+          statusCode: HttpStatus.OK,
+          message: 'Post removido com sucesso.',
         } as SavePostResponseDTO;
       }
+      return {
+        statusCode: HttpStatus.NO_CONTENT,
+        message: 'Nenhuma modificação foi necessária.',
+      } as SavePostResponseDTO;
     }
+    return {
+      statusCode: HttpStatus.NOT_FOUND,
+      message: 'Post salvo não encontrado para remoção.',
+    } as SavePostResponseDTO;
   }
 }
