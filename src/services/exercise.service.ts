@@ -38,13 +38,6 @@ export class ExerciseService {
       (item) => item.exercise && item.exercise.deletedAt === null,
     );
 
-    if (!filteredHistory.length) {
-      throw new HttpException(
-        'No exercise history found.',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
     return filteredHistory.map((item) => ({
       title: item.exercise.title,
       description: item.exercise.description,
@@ -82,10 +75,6 @@ export class ExerciseService {
         },
       },
     });
-
-    if (exercisesReturned.length === 0) {
-      throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
-    }
 
     return exercisesReturned;
   }

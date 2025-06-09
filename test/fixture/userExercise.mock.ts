@@ -8,10 +8,10 @@ export function mockUserExercise({
   deletedAt,
 }: Partial<UserExercise>): UserExercise {
   return {
-    user_id: user_id || 'b60b728d450146a1bbb4836ed61c93c7',
-    exercise_id: exercise_id || 'abc123exercise',
-    createdAt: createdAt || new Date('2025-05-01T10:00:00'),
-    updatedAt: updatedAt || new Date('2025-05-01T10:00:00'),
+    user_id: user_id || 'test-user-id',
+    exercise_id: exercise_id || 'test-exercise-id',
+    createdAt: createdAt || new Date('2025-06-01T10:00:00Z'),
+    updatedAt: updatedAt || new Date('2025-06-01T10:00:00Z'),
     deletedAt: deletedAt || null,
   };
 }
