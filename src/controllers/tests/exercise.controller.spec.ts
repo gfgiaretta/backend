@@ -16,6 +16,16 @@ describe('ExerciseController', () => {
   let exerciseService: ExerciseService;
   let prisma: PrismaService;
 
+  const fixedDate = new Date('2025-05-15T12:00:00Z');
+
+  beforeAll(() => {
+    jest.useFakeTimers().setSystemTime(fixedDate);
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(async () => {
     const testModule: TestingModule = await Test.createTestingModule({
       imports: [UserModule],
