@@ -71,40 +71,15 @@ export class PostController {
   ): Promise<SavePostResponseDTO> {
     const userId = req.payload.userId;
 
-    const statusCode = await this.postService.savePost(
+    const response = await this.postService.savePost(
       userId,
       body.postId,
       body.save,
     );
 
-    let message: string;
-
-    switch (statusCode) {
-      case HttpStatus.OK:
-        message = body.save
-          ? 'Post salvo com sucesso.'
-          : 'Post removido com sucesso.';
-        break;
-      case HttpStatus.NO_CONTENT:
-        message = 'Nenhuma modificação foi necessária.';
-        break;
-      case HttpStatus.NOT_FOUND:
-        message = body.save
-          ? 'Usuário ou post não encontrado.'
-          : 'Post salvo não encontrado para remoção.';
-        break;
-      case HttpStatus.BAD_REQUEST:
-        message = 'Requisição inválida.';
-        break;
-      case HttpStatus.INTERNAL_SERVER_ERROR:
-      default:
-        message = 'Erro interno no servidor.';
-        break;
-    }
-
     return {
-      statusCode,
-      message,
+      statusCode: response.statusCode,
+      message: response.message,
     };
   }
 }

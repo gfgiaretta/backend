@@ -1,6 +1,10 @@
 import { HttpException, HttpStatus, Injectable, Post } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { PostResponseDTO, postOwnerResponseDTO } from '../dtos/post.dto';
+import {
+  PostResponseDTO,
+  SavePostResponseDTO,
+  postOwnerResponseDTO,
+} from '../dtos/post.dto';
 import { PresignedService } from './presigned.service';
 import { PostMapper } from '../mappers/post.mapper';
 
@@ -82,7 +86,7 @@ export class PostService {
     userId: string,
     postId: string,
     save: boolean,
-  ): Promise<HttpStatus> {
+  ): Promise<SavePostResponseDTO> {
     const user = await this.prisma.user.findUnique({
       where: { user_id: userId },
     });
@@ -116,14 +120,14 @@ export class PostService {
     });
 
     if (save) {
-      console.log('Entrei no save');
       if (alreadyExists) {
         if (alreadyExists.deletedAt === null) {
-          console.log('Entrei no deletAt null');
-          return HttpStatus.NO_CONTENT;
+          return {
+            statusCode: HttpStatus.NO_CONTENT,
+            message: 'Nenhuma modificação foi necessária.',
+          } as SavePostResponseDTO;
         } else {
           const data = PostMapper.toPrismaUpdateDate(false);
-          console.log('Entrei no deletAt true');
           await this.prisma.userSavedPost.update({
             where: {
               user_id_post_id: {
@@ -133,7 +137,10 @@ export class PostService {
             },
             data,
           });
-          return HttpStatus.OK;
+          return {
+            statusCode: HttpStatus.OK,
+            message: 'Post salvo com sucesso.',
+          } as SavePostResponseDTO;
         }
       } else {
         await this.prisma.userSavedPost.create({
@@ -142,13 +149,14 @@ export class PostService {
             post: { connect: { post_id: postId } },
           },
         });
-        console.log('Entrei no ok, pq criei ja q nao existia');
-        return HttpStatus.OK;
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Post salvo com sucesso.',
+        } as SavePostResponseDTO;
       }
     } else {
       if (alreadyExists) {
         if (alreadyExists.deletedAt === null) {
-          console.log('Entrei no deleteAt doq nao esta salvo');
           const data = PostMapper.toPrismaUpdateDate(true);
           await this.prisma.userSavedPost.update({
             where: {
@@ -159,14 +167,21 @@ export class PostService {
             },
             data,
           });
-          return HttpStatus.OK;
+          return {
+            statusCode: HttpStatus.OK,
+            message: 'Post removido com sucesso.',
+          } as SavePostResponseDTO;
         } else {
-          console.log('Entrei no nao salvo nao ha mudancas');
-          return HttpStatus.NO_CONTENT;
+          return {
+            statusCode: HttpStatus.NO_CONTENT,
+            message: 'Nenhuma modificação foi necessária.',
+          } as SavePostResponseDTO;
         }
       } else {
-        console.log('Entrei no caso nao haja');
-        return HttpStatus.NOT_FOUND;
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Post salvo não encontrado para remoção.',
+        } as SavePostResponseDTO;
       }
     }
   }

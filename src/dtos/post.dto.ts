@@ -1,4 +1,4 @@
-import { Optional } from '@nestjs/common';
+import { HttpStatus, Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
@@ -73,7 +73,7 @@ export class PostResponseDTO {
 }
 export class SavePostResponseDTO {
   @ApiProperty({ example: 201 })
-  statusCode: number;
+  statusCode: HttpStatus;
 
   @ApiProperty({ example: 'Post saved successfully.' })
   message: string;
