@@ -10,7 +10,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { AuthenticatedRequest } from '../dtos/auth.dto';
-import { ApiBearerAuth, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
   PostResponseDTO,
   SavePostDTO,

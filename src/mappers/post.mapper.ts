@@ -1,4 +1,4 @@
-import { Prisma, UserSavedPost } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { CreatePostDTO } from '../dtos/post.dto';
 
