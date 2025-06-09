@@ -1,8 +1,17 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CommentService } from '../services/comment.service';
 import { CreateCommentDTO, GetCommentResponseDTO } from 'src/dtos/comment.dto';
-import { IsPublic } from 'src/auth/decorators/isPublic.decorator';
 import { AuthenticatedRequest } from 'src/dtos/auth.dto';
 
 @ApiTags('Comment')
@@ -11,28 +20,31 @@ import { AuthenticatedRequest } from 'src/dtos/auth.dto';
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  @IsPublic()
   @Get('/')
-  async getUploadURL(@Query('post_id') post_id: string): Promise<GetCommentResponseDTO[]> {
-    return await this.commentService.getComments(post_id);
+  async getComments(
+    @Query('postId') postId: string,
+  ): Promise<GetCommentResponseDTO[]> {
+    return await this.commentService.getComments(postId);
   }
 
-  @Patch(':id')
-  async deleteComment(@Param('id') commentId: string) {
-    return await this.commentService.deleteComment(commentId);
+  @Delete('/:id')
+  async deleteComment(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') commentId: string,
+  ): Promise<HttpStatus> {
+    const userId = req.payload.userId;
+    return await this.commentService.deleteComment(userId, commentId);
   }
 
   @Post('/')
-    async createComment(
-      @Req() req: AuthenticatedRequest,
-      @Body() body: CreateCommentDTO,
-    ): Promise<void> {
-      const userId = req.payload.userId;
-  
-      await this.commentService.createComment({
-        ...body,
-        userId,
-      });
-
-    }
+  async createComment(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: CreateCommentDTO,
+  ): Promise<HttpStatus> {
+    const userId = req.payload.userId;
+    return await this.commentService.createComment({
+      ...body,
+      userId,
+    });
+  }
 }

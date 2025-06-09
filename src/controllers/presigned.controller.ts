@@ -18,7 +18,7 @@ export class PresignedController {
 
   @IsPublic()
   @Get('/dnl')
-  async getDowloadURL(@Req() req: AuthenticatedRequest): Promise<string> {
+  async getDowloadURL(): Promise<string> {
     const key = `default_profile.jpeg`;
     return await this.presignedService.getDownloadURL(key);
   }

@@ -1,7 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { CreateCommentDTO } from 'src/dtos/comment.dto';
-import { connect } from 'http2';
 
 @Injectable()
 export class CommentMapper {
