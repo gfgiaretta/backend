@@ -47,7 +47,7 @@ describe('ExerciseController', () => {
         {
           provide: UserService,
           useValue: {
-            updateUserStreak: jest.fn(), // mock do método que está quebrando
+            updateUserStreak: jest.fn(),
           },
         },
       ],
