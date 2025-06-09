@@ -10,21 +10,12 @@ import {
 import { mockTestUser } from '../../../test/fixture/user.mock';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { UserModule } from '../../modules/user.module';
+import { mockTestUserExercise } from '../../../test/fixture/userExercise.mock';
 
 describe('ExerciseController', () => {
   let exerciseController: ExerciseController;
   let exerciseService: ExerciseService;
   let prisma: PrismaService;
-
-  const fixedDate = new Date('2025-05-15T12:00:00Z');
-
-  beforeAll(() => {
-    jest.useFakeTimers().setSystemTime(fixedDate);
-  });
-
-  afterAll(() => {
-    jest.useRealTimers();
-  });
 
   beforeEach(async () => {
     const testModule: TestingModule = await Test.createTestingModule({
@@ -104,6 +95,10 @@ describe('ExerciseController', () => {
       jest
         .spyOn(exerciseService, 'registerExercise')
         .mockRejectedValue(exception);
+
+      jest
+        .spyOn(prisma.userExercise, 'findFirst')
+        .mockResolvedValue(mockTestUserExercise);
 
       try {
         await exerciseController.registerExercise(mockRequest, exerciseId);
