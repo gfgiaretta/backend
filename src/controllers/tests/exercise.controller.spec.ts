@@ -9,24 +9,53 @@ import {
 } from '../../../test/fixture/exercise.mock';
 import { mockTestUser } from '../../../test/fixture/user.mock';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { UserModule } from '../../modules/user.module';
-import { mockTestUserExercise } from '../../../test/fixture/userExercise.mock';
+import { UserService } from '../../services/user.service';
+import { HashService } from '../../services/hash.service';
+import { PresignedService } from '../../services/presigned.service';
 
 describe('ExerciseController', () => {
   let exerciseController: ExerciseController;
   let exerciseService: ExerciseService;
-  let prisma: PrismaService;
+  let userService: UserService;
 
   beforeEach(async () => {
     const testModule: TestingModule = await Test.createTestingModule({
-      imports: [UserModule],
+      imports: [],
       controllers: [ExerciseController],
-      providers: [ExerciseService, PrismaService],
+      providers: [
+        ExerciseService,
+        UserService,
+        PrismaService,
+        {
+          provide: HashService,
+          useValue: {
+            hash: jest.fn().mockResolvedValue('hashedPassword'),
+            compare: jest.fn().mockResolvedValue(true),
+          },
+        },
+        {
+          provide: PresignedService,
+          useValue: {
+            getUploadURL: jest
+              .fn()
+              .mockResolvedValue('https://signedUploadUrl.com'),
+            getDownloadURL: jest
+              .fn()
+              .mockResolvedValue('https://signedDownloadUrl.com'),
+          },
+        },
+        {
+          provide: UserService,
+          useValue: {
+            updateUserStreak: jest.fn(), // mock do método que está quebrando
+          },
+        },
+      ],
     }).compile();
 
     exerciseController = testModule.get<ExerciseController>(ExerciseController);
     exerciseService = testModule.get<ExerciseService>(ExerciseService);
-    prisma = testModule.get<PrismaService>(PrismaService);
+    userService = testModule.get<UserService>(UserService);
   });
 
   describe('getExercises', () => {
@@ -74,16 +103,25 @@ describe('ExerciseController', () => {
     const exerciseId = mockTestExercise.exercise_id;
 
     it('should return HttpStatus.CREATED if registration succeeds', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
-      jest
+      const registerExerciseSpy = jest
         .spyOn(exerciseService, 'registerExercise')
         .mockResolvedValue(HttpStatus.CREATED);
+
+      const updateUserStreakSpy = jest
+        .spyOn(userService, 'updateUserStreak')
+        .mockImplementation(async () => Promise.resolve());
 
       const result = await exerciseController.registerExercise(
         mockRequest,
         exerciseId,
       );
+
       expect(result).toBe(HttpStatus.CREATED);
+      expect(registerExerciseSpy).toHaveBeenCalledWith(
+        mockTestUser.user_id,
+        exerciseId,
+      );
+      expect(updateUserStreakSpy).toHaveBeenCalledWith(mockTestUser.user_id);
     });
 
     it('should throw HttpException if service throws an error', async () => {
@@ -96,19 +134,11 @@ describe('ExerciseController', () => {
         .spyOn(exerciseService, 'registerExercise')
         .mockRejectedValue(exception);
 
-      jest
-        .spyOn(prisma.userExercise, 'findFirst')
-        .mockResolvedValue(mockTestUserExercise);
+      jest.spyOn(userService, 'updateUserStreak').mockResolvedValue();
 
-      try {
-        await exerciseController.registerExercise(mockRequest, exerciseId);
-      } catch (error) {
-        expect(error).toBeInstanceOf(HttpException);
-        if (error instanceof HttpException) {
-          expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
-          expect(error.getResponse()).toBe('Exercise not found.');
-        }
-      }
+      await expect(
+        exerciseController.registerExercise(mockRequest, exerciseId),
+      ).rejects.toThrow(exception);
     });
   });
 });
