@@ -10,7 +10,7 @@ export class CommentOwnerDTO {
   id: string;
 
   @ApiProperty({
-    example: '9e2b3a8b-3e9f-44b3-b15e-4b7b3e3e3c9a',
+    example: 'Eduardo',
   })
   @IsNotEmpty()
   @IsString()
