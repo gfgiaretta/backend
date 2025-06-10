@@ -44,7 +44,6 @@ export class PostService {
           owner: {
             name: owner?.name || '',
             profile_picture_url: await this.presignedService.getDownloadURL(
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               owner?.profile_picture_path || '',
             ),
           } as postOwnerResponseDTO,
