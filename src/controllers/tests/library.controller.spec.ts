@@ -12,6 +12,7 @@ describe('LibraryController', () => {
 
   const mockLibraryService = {
     getLibraryWithSavedInfo: jest.fn(),
+    saveLibrary: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -63,6 +64,65 @@ describe('LibraryController', () => {
       expect(mockLibraryService.getLibraryWithSavedInfo).toHaveBeenCalledWith(
         mockUserId,
       );
+    });
+  });
+
+  describe('saveLibrary', () => {
+    it('should save library successfully', async () => {
+      const mockUserId = 'b60b728d450146a1bbb4836ed61c93c7';
+      const mockRequest = {
+        payload: { userId: mockUserId },
+      } as AuthenticatedRequest;
+      const mockBody = {
+        library_id: 'b9678d98-da01-41a1-a61c-7a05f64066a6',
+        save: true,
+      };
+
+      mockLibraryService.saveLibrary.mockResolvedValue({
+        statusCode: 200,
+        message: 'Library saved.',
+      });
+
+      const result = await controller.saveLibrary(mockRequest, mockBody);
+      expect(result).toEqual({ statusCode: 200, message: 'Library saved.' });
+    });
+
+    it('sould unsave library successfully', async () => {
+      const mockUserId = 'b60b728d450146a1bbb4836ed61c93c7';
+      const mockRequest = {
+        payload: { userId: mockUserId },
+      } as AuthenticatedRequest;
+      const mockBody = {
+        library_id: 'b9678d98-da01-41a1-a61c-7a05f64066a6',
+        save: false,
+      };
+
+      mockLibraryService.saveLibrary.mockResolvedValue({
+        statusCode: 200,
+        message: 'Library unsaved.',
+      });
+
+      const result = await controller.saveLibrary(mockRequest, mockBody);
+      expect(result).toEqual({ statusCode: 200, message: 'Library unsaved.' });
+    });
+
+    it('should return not found if library does not exist', async () => {
+      const mockUserId = 'b60b728d450146a1bbb4836ed61c93c7';
+      const mockRequest = {
+        payload: { userId: mockUserId },
+      } as AuthenticatedRequest;
+      const mockBody = {
+        library_id: 'kgj123xyz-1234-5678-90ab-cdefghijklmn',
+        save: true,
+      };
+
+      mockLibraryService.saveLibrary.mockResolvedValue({
+        statusCode: 200,
+        message: 'Library unsaved.',
+      });
+
+      const result = await controller.saveLibrary(mockRequest, mockBody);
+      expect(result).toEqual({ statusCode: 200, message: 'Library unsaved.' });
     });
   });
 });
