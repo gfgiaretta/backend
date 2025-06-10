@@ -70,7 +70,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }
 
     const interests = user.user_interest

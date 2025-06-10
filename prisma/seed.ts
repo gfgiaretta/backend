@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import { PrismaClient } from '@prisma/client';
 import { HashService } from '../src/services/hash.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -128,8 +129,7 @@ async function main() {
         title: 'Jornada da Gratidão',
         description:
           'Aqui a ideia é exercitar o quanto podemos criar com tão pouco. Escreva uma narrativa com apenas 8 palavras sobre um romance não correspondido.',
-        text_field: ['Gratidão 1', 'Gratidão 2', 'Gratidão 3'],
-        image_url: null,
+        content: { text_field: ['Gratidão 1', 'Gratidão 2', 'Gratidão 3'] },
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -141,8 +141,7 @@ async function main() {
         title: 'Desenhe seu mundo ideal',
         description:
           'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
-        text_field: ['Natureza', 'Animais'],
-        image_url: 'https://example.com/images/world.jpg',
+        content: { image_url: 'https://example.com/images/world.jpg' },
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -154,8 +153,7 @@ async function main() {
         title: 'Desenhe somente com uma cor!',
         description:
           'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
-        text_field: ['Natureza', 'Animais'],
-        image_url: 'https://example.com/images/world.jpg',
+        content: { image_url: 'https://example.com/images/world.jpg' },
         createdAt: createDatePast(1),
         updatedAt: createDatePast(1),
         deletedAt: null,
@@ -167,8 +165,7 @@ async function main() {
         title: 'Que tal inverter as coisas?',
         description:
           'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
-        text_field: ['Natureza', 'Animais'],
-        image_url: 'https://example.com/images/world.jpg',
+        content: { image_url: 'https://example.com/images/world.jpg' },
         createdAt: createDatePast(2),
         updatedAt: createDatePast(2),
         deletedAt: null,
@@ -180,8 +177,7 @@ async function main() {
         title: 'Desenhe seu maior sonho',
         description:
           'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
-        text_field: ['Natureza', 'Animais'],
-        image_url: 'https://example.com/images/world.jpg',
+        content: { image_url: 'https://example.com/images/world.jpg' },
         createdAt: createDatePast(3),
         updatedAt: createDatePast(3),
         deletedAt: null,
@@ -193,8 +189,7 @@ async function main() {
         title: 'Vamos criar uma logo?',
         description:
           'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
-        text_field: ['Natureza', 'Animais'],
-        image_url: 'https://example.com/images/world.jpg',
+        content: { image_url: 'https://example.com/images/world.jpg' },
         createdAt: createDatePast(4),
         updatedAt: createDatePast(4),
         deletedAt: null,
