@@ -51,6 +51,30 @@ async function main() {
         updatedAt: createDatePast(1),
         deletedAt: null,
       },
+      {
+        user_id: uuidv4(),
+        name: 'Thiago Defini',
+        description: 'Ages II',
+        email: 'thiago@example.com',
+        password: await hashService.hash('thiago123'),
+        profile_picture_path: 'profile3.jpg',
+        streak: 10,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        user_id: uuidv4(),
+        name: 'Flavia Tavaniello',
+        description: 'Ages I',
+        email: 'flavia@example.com',
+        password: await hashService.hash('flavia123'),
+        profile_picture_path: 'profile4.jpg',
+        streak: 7,
+        createdAt: createDatePast(2),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
     ],
   });
 
@@ -78,6 +102,24 @@ async function main() {
     },
   });
   if (!user3) {
+    throw new Error('Usuário não encontrado!');
+  }
+
+  const user4 = await prisma.user.findUnique({
+    where: {
+      email: 'thiago@example.com',
+    },
+  });
+  if (!user4) {
+    throw new Error('Usuário não encontrado!');
+  }
+
+  const user5 = await prisma.user.findUnique({
+    where: {
+      email: 'flavia@example.com',
+    },
+  });
+  if (!user5) {
     throw new Error('Usuário não encontrado!');
   }
 
@@ -119,6 +161,9 @@ async function main() {
   const designId = getInterestId('Design');
   const escritaId = getInterestId('Escrita');
   const musicaId = getInterestId('Música');
+  const fotografiaId = getInterestId('Fotografia');
+  const jogosId = getInterestId('Jogos');
+  const modaId = getInterestId('Moda');
 
   await prisma.exercise.createMany({
     data: [
@@ -194,6 +239,54 @@ async function main() {
         updatedAt: createDatePast(4),
         deletedAt: null,
       },
+      {
+        exercise_id: uuidv4(),
+        type: 'Composição Musical',
+        interest_id: musicaId,
+        title: 'Melodia da Natureza',
+        description:
+          'Crie uma pequena melodia inspirada nos sons da natureza, usando apenas 3 instrumentos.',
+        content: { audio_prompt: 'sons_da_natureza.mp3' },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        exercise_id: uuidv4(),
+        type: 'Ensaio Fotográfico Temático',
+        interest_id: fotografiaId,
+        title: 'A Cidade e Suas Cores',
+        description:
+          'Capture 5 fotos que representem as cores vibrantes ou monocromáticas da cidade ao seu redor.',
+        content: { text_field: ['cidade_cores'] },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        exercise_id: uuidv4(),
+        type: 'Criação de Personagem',
+        interest_id: jogosId,
+        title: 'Herói Inusitado',
+        description:
+          'Desenvolva um herói de videogame com poderes e fraquezas baseados em objetos do dia a dia.',
+        content: { text_field: ['heroi_inusitado'] },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        exercise_id: uuidv4(),
+        type: 'Design de Moda Conceitual',
+        interest_id: modaId,
+        title: 'Futurismo Urbano',
+        description:
+          'Crie um esboço de uma peça de vestuário inspirada na arquitetura futurista e na vida urbana.',
+        content: { text_field: ['esboco_moda'] },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
     ],
   });
 
@@ -224,6 +317,11 @@ async function main() {
 
   const gratidaoId = await getExerciseIdByTitle('Jornada da Gratidão');
   const mundoIdealId = await getExerciseIdByTitle('Desenhe seu mundo ideal');
+  const melodiaNaturezaId = await getExerciseIdByTitle('Melodia da Natureza');
+  const cidadeCoresId = await getExerciseIdByTitle('A Cidade e Suas Cores');
+  const heroiInusitadoId = await getExerciseIdByTitle('Herói Inusitado');
+  const futurismoUrbanoId = await getExerciseIdByTitle('Futurismo Urbano');
+
   const designExercisesId = await getExercisesIdByInterest(designId);
 
   await prisma.post.createMany({
@@ -245,6 +343,36 @@ async function main() {
         description: 'Alguns rascunhos do meu novo app!',
         image_url: 'post2.jpg',
         createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        post_id: uuidv4(),
+        owner_Id: user3.user_id,
+        title: 'Releitura de Davi de Michelangelo',
+        description: 'Releitura da famosa escultura Davi de Michelangelo',
+        image_url: 'post3.jpg',
+        createdAt: createDatePast(1),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        post_id: uuidv4(),
+        owner_Id: user4.user_id,
+        title: 'Minhas novas ilustrações',
+        description: 'Adorei explorar essa técnica de aquarela digital.',
+        image_url: 'post4.jpg',
+        createdAt: createDatePast(1),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        post_id: uuidv4(),
+        owner_Id: user5.user_id,
+        title: 'Pensamentos sobre o novo rumo da moda',
+        description: 'Um overview sobre as novas tendências da moda.',
+        image_url: 'post5.jpg',
+        createdAt: createDatePast(2),
         updatedAt: new Date(),
         deletedAt: null,
       },
@@ -279,6 +407,21 @@ async function main() {
     user2.user_id,
   );
 
+  const postId3 = await getPostIdByTitleAndOwner(
+    'Releitura de Davi de Michelangelo',
+    user3.user_id,
+  );
+
+  const postId4 = await getPostIdByTitleAndOwner(
+    'Minhas novas ilustrações',
+    user4.user_id,
+  );
+
+  const postId5 = await getPostIdByTitleAndOwner(
+    'Pensamentos sobre o novo rumo da moda',
+    user5.user_id,
+  );
+
   await prisma.library.createMany({
     data: [
       {
@@ -297,6 +440,26 @@ async function main() {
         link: 'https://example.com/library/mindfulness-guide',
         image_url:
           'https://i.pinimg.com/736x/d0/4f/20/d04f207999ebe5e14714ed30e8089803.jpg',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        library_id: uuidv4(),
+        description: 'Artigo: O Poder do Hábito',
+        link: 'https://example.com/library/power-of-habit',
+        image_url:
+          'https://i.pinimg.com/736x/89/3e/2a/893e2a7e7c8f9f7d4b1a2e7c8a9f7e5d.jpg',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        library_id: uuidv4(),
+        description: 'Livro: O Caminho do Artista',
+        link: 'https://example.com/library/artist-way',
+        image_url:
+          'https://i.pinimg.com/736x/2b/9a/3c/2b9a3c8e7e0e7a2b9f7d4b1a2e7c8a9f7e5d.jpg',
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -322,6 +485,12 @@ async function main() {
   );
   const mindfulnessId = await getLibraryIdByDescription(
     'Guia Prático de Mindfulness',
+  );
+  const poderHabitoId = await getLibraryIdByDescription(
+    'Artigo: O Poder do Hábito',
+  );
+  const caminhoArtistaId = await getLibraryIdByDescription(
+    'Livro: O Caminho do Artista',
   );
 
   await prisma.userExercise.createMany({
@@ -358,6 +527,30 @@ async function main() {
         createdAt: createDatePast(4),
         updatedAt: createDatePast(4),
       },
+      {
+        user_id: user4.user_id,
+        exercise_id: melodiaNaturezaId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        user_id: user5.user_id,
+        exercise_id: cidadeCoresId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        user_id: user.user_id,
+        exercise_id: heroiInusitadoId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        user_id: user2.user_id,
+        exercise_id: futurismoUrbanoId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ],
   });
 
@@ -371,6 +564,14 @@ async function main() {
         user_id: user.user_id,
         library_id: mindfulnessId,
       },
+      {
+        user_id: user3.user_id,
+        library_id: poderHabitoId,
+      },
+      {
+        user_id: user4.user_id,
+        library_id: caminhoArtistaId,
+      },
     ],
   });
 
@@ -383,6 +584,18 @@ async function main() {
       {
         user_id: user.user_id,
         post_id: postId2,
+      },
+      {
+        user_id: user3.user_id,
+        post_id: postId3,
+      },
+      {
+        user_id: user4.user_id,
+        post_id: postId4,
+      },
+      {
+        user_id: user5.user_id,
+        post_id: postId5,
       },
     ],
   });
@@ -408,6 +621,22 @@ async function main() {
       {
         user_id: user3.user_id,
         interest_id: musicaId,
+      },
+      {
+        user_id: user4.user_id,
+        interest_id: fotografiaId,
+      },
+      {
+        user_id: user4.user_id,
+        interest_id: musicaId,
+      },
+      {
+        user_id: user5.user_id,
+        interest_id: jogosId,
+      },
+      {
+        user_id: user5.user_id,
+        interest_id: modaId,
       },
     ],
   });
