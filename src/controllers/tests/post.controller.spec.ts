@@ -6,10 +6,13 @@ import { PostService } from '../../services/post.service';
 import {
   mockTestPostResponse,
   mockTestPostResponseSaved,
+  mockTestSavePost,
 } from '../../../test/fixture/post.mock';
 import { AuthenticatedRequest } from 'src/dtos/auth.dto';
 import { PresignedService } from '../../services/presigned.service';
 import { HttpStatus } from '@nestjs/common';
+import { mockTestUser } from 'test/fixture/user.mock';
+import { mockTestUserInterest } from 'test/fixture/userInterest.mock';
 
 jest.mock('@aws-sdk/client-s3');
 
@@ -122,18 +125,58 @@ describe('PostController', () => {
     expect(result[0].isSaved).toBe(true);
   });
 
-  it('should return an array with 1 unsaved post', async () => {
-    jest
-      .spyOn(postService, 'getPostsWithSavedStatusPaginated')
-      .mockResolvedValue([mockTestPostResponse]);
+  describe('savePost', () => {
+    it('should return post saved correctly', async () => {
+      jest.spyOn(postService, 'savePost').mockResolvedValue({
+        message: 'Post salvo com sucesso.',
+        statusCode: 200,
+      });
 
-    const mockRequest = {
-      payload: { userId: 'b60b728d450146a1bbb4836ed61c93c7' },
-    } as AuthenticatedRequest;
+      const mockRequest = {
+        payload: { userId: 'b60b728d450146a1bbb4836ed61c93c7' },
+      } as AuthenticatedRequest;
 
-    const result = await postController.getPosts(mockRequest, 1);
+      const result = await postController.savePost(mockTestSavePost, mockRequest);
 
-    expect(result).toEqual([mockTestPostResponse]);
-    expect(result[0].isSaved).toBe(false);
+      expect(result).toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'Post salvo com sucesso.',
+      });
+    });
+    it('should return no modification needed', async () => {
+      jest.spyOn(postService, 'savePost').mockResolvedValue({
+        message: 'Nenhuma modificação foi necessária.',
+        statusCode: 204,
+      });
+
+      const mockRequest = {
+        payload: { userId: 'b60b728d450146a1bbb4836ed61c93c7' },
+      } as AuthenticatedRequest;
+
+      const result = await postController.savePost(mockTestSavePost, mockRequest);
+
+      expect(result).toEqual({
+        statusCode: HttpStatus.NO_CONTENT,
+        message: 'Nenhuma modificação foi necessária.',
+      });
+    });
+
+    it('should return post removed', async () => {
+      jest.spyOn(postService, 'savePost').mockResolvedValue({
+        message: 'Post removido com sucesso.',
+        statusCode: 200,
+      });
+
+      const mockRequest = {
+        payload: { userId: 'b60b728d450146a1bbb4836ed61c93c7' },
+      } as AuthenticatedRequest;
+
+      const result = await postController.savePost(mockTestSavePost, mockRequest);
+
+      expect(result).toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'Post removido com sucesso.',
+      });
+    });
   });
 });

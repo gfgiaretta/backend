@@ -139,4 +139,334 @@ describe('PostService', () => {
       });
     });
   });
+
+  describe('savePost', () => {
+    it('should return post saved correctly if the relation does not exists', async() => {
+      const mockInput = {
+        userId: 'user-123',
+        save: true,
+        postId: 'post-1',
+      };
+
+      const mockFindUser = jest
+        .spyOn(prisma.user, 'findUnique')
+        .mockResolvedValue(mockTestUser);
+
+      const mockFindPost = jest
+        .spyOn(prisma.post, 'findUnique')
+        .mockResolvedValue(mockTestPost);
+
+      const mockAlreadyExistis = jest
+        .spyOn(prisma.userSavedPost, 'findUnique')
+        .mockResolvedValue(null);
+
+      const mockCreateUserSavedPost = jest
+        .spyOn(prisma.userSavedPost, 'create')
+        .mockResolvedValue({post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          user_id: 'user-123',
+        });
+
+      const result = await service.savePost(
+        mockInput.userId,
+        mockInput.postId,
+        mockInput.save,
+      );
+
+      expect(result).toEqual({
+        message: 'Post salvo com sucesso.',
+        statusCode: 200,
+      });
+    });
+
+    it('should return no modification needed if the relation existis and its not deleted', async() => {
+      const mockInput = {
+        userId: 'user-123',
+        save: true,
+        postId: 'post-1',
+      };
+
+      const mockFindUser = jest
+        .spyOn(prisma.user, 'findUnique')
+        .mockResolvedValue(mockTestUser);
+
+      const mockFindPost = jest
+        .spyOn(prisma.post, 'findUnique')
+        .mockResolvedValue(mockTestPost);
+
+      const mockAlreadyExistis = jest
+        .spyOn(prisma.userSavedPost, 'findUnique')
+        .mockResolvedValue({
+          post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          user_id: 'user-123',
+        });
+
+      const result = await service.savePost(
+        mockInput.userId,
+        mockInput.postId,
+        mockInput.save,
+      );
+
+      expect(result).toEqual({
+        message: 'Nenhuma modificação foi necessária.',
+        statusCode: 204,
+      });
+    });
+
+    it('should return success if already existis and deleted is not null', async() => {
+      const mockInput = {
+        userId: 'user-123',
+        save: true,
+        postId: 'post-1',
+      };
+
+      const mockFindUser = jest
+        .spyOn(prisma.user, 'findUnique')
+        .mockResolvedValue(mockTestUser);
+
+      const mockFindPost = jest
+        .spyOn(prisma.post, 'findUnique')
+        .mockResolvedValue(mockTestPost);
+
+      const mockAlreadyExistis = jest
+        .spyOn(prisma.userSavedPost, 'findUnique')
+        .mockResolvedValue({
+          post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: new Date(),
+          user_id: 'user-123',
+        });
+
+      const mockCreateUserSavedPost = jest
+        .spyOn(prisma.userSavedPost, 'create')
+        .mockResolvedValue({post_id: 'string',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          user_id: 'user-123',
+        });
+
+      const mockUpdateUserSavedPost = jest
+        .spyOn(prisma.userSavedPost, 'update')
+        .mockResolvedValue({post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          user_id: 'user-123',
+        });
+
+      const result = await service.savePost(
+        mockInput.userId,
+        mockInput.postId,
+        mockInput.save,
+      );
+
+      expect(result).toEqual({
+        message: 'Post salvo com sucesso.',
+        statusCode: 200,
+      });
+    });
+
+    it('should return no modification needed if the relation exists and its not deleted', async() => {
+      const mockInput = {
+        userId: 'user-123',
+        save: true,
+        postId: 'post-1',
+      };
+
+      const mockFindUser = jest
+        .spyOn(prisma.user, 'findUnique')
+        .mockResolvedValue(mockTestUser);
+
+      const mockFindPost = jest
+        .spyOn(prisma.post, 'findUnique')
+        .mockResolvedValue(mockTestPost);
+
+      const mockAlreadyExistis = jest
+        .spyOn(prisma.userSavedPost, 'findUnique')
+        .mockResolvedValue({
+          post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          user_id: 'user-123',
+        });
+
+      const result = await service.savePost(
+        mockInput.userId,
+        mockInput.postId,
+        mockInput.save,
+      );
+
+      expect(result).toEqual({
+        message: 'Nenhuma modificação foi necessária.',
+        statusCode: 204,
+      });
+    });
+
+    it('should return success and remove post', async() => {
+      const mockInput = {
+        userId: 'user-123',
+        save: false,
+        postId: 'post-1',
+      };
+
+      const mockFindUser = jest
+        .spyOn(prisma.user, 'findUnique')
+        .mockResolvedValue(mockTestUser);
+
+      const mockFindPost = jest
+        .spyOn(prisma.post, 'findUnique')
+        .mockResolvedValue(mockTestPost);
+
+      const mockAlreadyExistis = jest
+        .spyOn(prisma.userSavedPost, 'findUnique')
+        .mockResolvedValue({
+          post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          user_id: 'user-123',
+        });
+
+      const mockCreateUserSavedPost = jest
+        .spyOn(prisma.userSavedPost, 'create')
+        .mockResolvedValue({post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          user_id: 'user-123',
+        });
+
+      const mockUpdateUserSavedPost = jest
+        .spyOn(prisma.userSavedPost, 'update')
+        .mockResolvedValue({post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          user_id: 'user-123',
+        });
+
+      const result = await service.savePost(
+        mockInput.userId,
+        mockInput.postId,
+        mockInput.save,
+      );
+
+      expect(result).toEqual({
+        message: 'Post removido com sucesso.',
+        statusCode: 200,
+      });
+    });
+
+    it('should return no modification needed in case of deleted post to not be saved anymore', async() => {
+      const mockInput = {
+        userId: 'user-123',
+        save: false,
+        postId: 'post-1',
+      };
+
+      const mockFindUser = jest
+        .spyOn(prisma.user, 'findUnique')
+        .mockResolvedValue(mockTestUser);
+
+      const mockFindPost = jest
+        .spyOn(prisma.post, 'findUnique')
+        .mockResolvedValue(mockTestPost);
+
+      const mockAlreadyExistis = jest
+        .spyOn(prisma.userSavedPost, 'findUnique')
+        .mockResolvedValue({
+          post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: new Date(),
+          user_id: 'user-123',
+        });
+
+      const mockCreateUserSavedPost = jest
+        .spyOn(prisma.userSavedPost, 'create')
+        .mockResolvedValue({post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          user_id: 'user-123',
+        });
+
+      const mockUpdateUserSavedPost = jest
+        .spyOn(prisma.userSavedPost, 'update')
+        .mockResolvedValue({post_id: 'post-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: new Date(),
+          user_id: 'user-123',
+        });
+
+      const result = await service.savePost(
+        mockInput.userId,
+        mockInput.postId,
+        mockInput.save,
+      );
+
+      expect(result).toEqual({
+        message: 'Nenhuma modificação foi necessária.',
+        statusCode: 204,
+      });
+    });
+
+    // it('should return post not found', async() => {
+    //   const mockInput = {
+    //     userId: 'user-123',
+    //     save: false,
+    //     postId: 'post-1',
+    //   };
+
+    //   const mockFindUser = jest
+    //     .spyOn(prisma.user, 'findUnique')
+    //     .mockResolvedValue(mockTestUser);
+
+    //   const mockFindPost = jest
+    //     .spyOn(prisma.post, 'findUnique')
+    //     .mockResolvedValue(mockTestPost);
+
+    //   const mockAlreadyExistis = jest
+    //     .spyOn(prisma.userSavedPost, 'findUnique')
+    //     .mockResolvedValue(null);
+
+    //   const mockCreateUserSavedPost = jest
+    //     .spyOn(prisma.userSavedPost, 'create')
+    //     .mockResolvedValue({post_id: 'string',
+    //       createdAt: new Date(),
+    //       updatedAt: new Date(),
+    //       deletedAt: null,
+    //       user_id: 'string',
+    //     });
+
+    //   const mockUpdateUserSavedPost = jest
+    //     .spyOn(prisma.userSavedPost, 'update')
+    //     .mockResolvedValue({post_id: 'string',
+    //       createdAt: new Date(),
+    //       updatedAt: new Date(),
+    //       deletedAt: null,
+    //       user_id: 'string',
+    //     });
+
+    //   const result = await service.savePost(
+    //     mockInput.userId,
+    //     mockInput.postId,
+    //     mockInput.save,
+    //   );
+
+    //   expect(result).toEqual({
+    //     message: 'Post removido com sucesso.',
+    //     statusCode: 200,
+    //   });
+    // });
+  });
 });
