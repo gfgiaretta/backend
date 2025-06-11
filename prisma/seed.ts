@@ -241,7 +241,7 @@ async function main() {
       },
       {
         exercise_id: uuidv4(),
-        type: 'Composição Musical',
+        type: 'Narrativa Limitada',
         interest_id: musicaId,
         title: 'Melodia da Natureza',
         description:
@@ -253,7 +253,7 @@ async function main() {
       },
       {
         exercise_id: uuidv4(),
-        type: 'Ensaio Fotográfico Temático',
+        type: 'Inversão',
         interest_id: fotografiaId,
         title: 'A Cidade e Suas Cores',
         description:
@@ -265,7 +265,7 @@ async function main() {
       },
       {
         exercise_id: uuidv4(),
-        type: 'Criação de Personagem',
+        type: 'Narrativa Limitada',
         interest_id: jogosId,
         title: 'Herói Inusitado',
         description:
@@ -277,7 +277,7 @@ async function main() {
       },
       {
         exercise_id: uuidv4(),
-        type: 'Design de Moda Conceitual',
+        type: 'Inversão',
         interest_id: modaId,
         title: 'Futurismo Urbano',
         description:
