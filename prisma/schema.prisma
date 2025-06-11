@@ -90,7 +90,7 @@ model UserInterest {
 model UserExercise {
   user_id     String
   exercise_id String
-  content     String    @default("")
+  content     Json
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
