@@ -3,7 +3,9 @@ import { PrismaService } from '../prisma.service';
 import { ExerciseService } from '../exercise.service';
 import { mockTestExercise } from '../../../test/fixture/exercise.mock';
 import { mockUserInterestList } from '../../../test/fixture/userInterest.mock';
+import { mockTestUserExercise } from '../../../test/fixture/userExercise.mock';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { mockTestUser } from '../../../test/fixture/user.mock';
 
 describe('ExerciseService', () => {
   let service: ExerciseService;
@@ -54,6 +56,68 @@ describe('ExerciseService', () => {
           expect(error.getResponse()).toEqual('No exercises were found.');
         }
       }
+    });
+  });
+
+  describe('registerExercise', () => {
+    const userId = mockTestUser.user_id;
+    const exerciseId = mockTestExercise.exercise_id;
+
+    it('should throw NOT_FOUND if exercise does not exist', async () => {
+      jest.spyOn(prisma.exercise, 'findUnique').mockResolvedValue(null);
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
+
+      await expect(
+        service.registerExercise(userId, exerciseId),
+      ).rejects.toThrow(
+        new HttpException('Exercise not found.', HttpStatus.NOT_FOUND),
+      );
+    });
+
+    it('should throw NOT_FOUND if user does not exist', async () => {
+      jest
+        .spyOn(prisma.exercise, 'findUnique')
+        .mockResolvedValue(mockTestExercise);
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(
+        service.registerExercise(userId, exerciseId),
+      ).rejects.toThrow(
+        new HttpException('User not found.', HttpStatus.NOT_FOUND),
+      );
+    });
+
+    it('should throw CONFLICT if exercise is already registered by the user', async () => {
+      jest
+        .spyOn(prisma.exercise, 'findUnique')
+        .mockResolvedValue(mockTestExercise);
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
+      jest
+        .spyOn(prisma.userExercise, 'findFirst')
+        .mockResolvedValue(mockTestUserExercise);
+
+      await expect(
+        service.registerExercise(userId, exerciseId),
+      ).rejects.toThrow(
+        new HttpException(
+          'Exercise already registered by user.',
+          HttpStatus.CONFLICT,
+        ),
+      );
+    });
+
+    it('should create a userExercise and return CREATED', async () => {
+      jest
+        .spyOn(prisma.exercise, 'findUnique')
+        .mockResolvedValue(mockTestExercise);
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
+      jest.spyOn(prisma.userExercise, 'findFirst').mockResolvedValue(null);
+      jest
+        .spyOn(prisma.userExercise, 'create')
+        .mockResolvedValue(mockTestUserExercise);
+
+      const result = await service.registerExercise(userId, exerciseId);
+      expect(result).toBe(HttpStatus.CREATED);
     });
   });
 });

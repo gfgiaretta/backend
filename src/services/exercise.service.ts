@@ -2,10 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { Exercise } from '@prisma/client';
 import { UserExerciseMapper } from '../mappers/userExercise.mapper';
-import {
-  UserExerciseDTO,
-  UserExerciseHistoryDTO,
-} from '../dtos/userExercise.dto';
+import { UserExerciseDTO, UserExerciseHistoryDTO } from '../dtos/userExercise.dto';
 
 @Injectable()
 export class ExerciseService {
@@ -40,13 +37,6 @@ export class ExerciseService {
     const filteredHistory = history.filter(
       (item) => item.exercise && item.exercise.deletedAt === null,
     );
-
-    if (!filteredHistory.length) {
-      throw new HttpException(
-        'No exercise history found.',
-        HttpStatus.NOT_FOUND,
-      );
-    }
 
     return filteredHistory.map((item) => ({
       title: item.exercise.title,
@@ -87,10 +77,6 @@ export class ExerciseService {
       },
     });
 
-    if (exercisesReturned.length === 0) {
-      throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
-    }
-
     return exercisesReturned;
   }
 
@@ -100,25 +86,43 @@ export class ExerciseService {
     content,
   }: UserExerciseDTO): Promise<HttpStatus> {
     const exercise = await this.prisma.exercise.findUnique({
-      where: { exercise_id: exerciseId },
+      where: { exercise_id: exerciseId, deletedAt: null },
     });
+
     if (!exercise) {
       throw new HttpException('Exercise not found.', HttpStatus.NOT_FOUND);
     }
 
     const user = await this.prisma.user.findUnique({
-      where: { user_id: userId },
+      where: { user_id: userId, deletedAt: null },
     });
+
     if (!user) {
       throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }
 
-    const userExercise = UserExerciseMapper.toPrisma(
+    const alreadyRegistered = await this.prisma.userExercise.findFirst({
+      where: {
+        user_id: userId,
+        exercise_id: exerciseId,
+      },
+    });
+
+    if (alreadyRegistered) {
+      throw new HttpException(
+        'Exercise already registered by user.',
+        HttpStatus.CONFLICT,
+      );
+    }
+
+   const userExercise = UserExerciseMapper.toPrisma(
       user.user_id,
       exercise.exercise_id,
       content,
     );
+
     await this.prisma.userExercise.create({ data: userExercise });
+
     return HttpStatus.CREATED;
   }
 

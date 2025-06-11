@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsJSON, IsString } from 'class-validator';
 
 export class UserExerciseDTO {
   @ApiProperty({ example: 'ecc4901b-f248-4053-8832-24a9b4a6559e' })
@@ -10,9 +10,9 @@ export class UserExerciseDTO {
   @IsString()
   exerciseId: string;
 
-  @ApiProperty({ example: 'content json' })
-  @IsString()
-  content: string;
+  @ApiProperty({ example: '{}' })
+  @IsJSON()
+  content: JSON;
 }
 
 export class UserExerciseHistoryDTO {
