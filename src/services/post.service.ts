@@ -92,7 +92,7 @@ export class PostService {
 
     if (!postId || typeof save !== 'boolean') {
       throw new HttpException(
-        'postId e save são obrigatórios.',
+        'must have postId and save.',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -123,7 +123,7 @@ export class PostService {
         if (alreadyExists.deletedAt === null) {
           return {
             statusCode: HttpStatus.NO_CONTENT,
-            message: 'Nenhuma modificação foi necessária.',
+            message: 'No modification were needed.',
           } as SavePostResponseDTO;
         }
         const data = PostMapper.toPrismaUpdateDate(false);
@@ -138,7 +138,7 @@ export class PostService {
         });
         return {
           statusCode: HttpStatus.OK,
-          message: 'Post salvo com sucesso.',
+          message: 'Post saved successfully.',
         } as SavePostResponseDTO;
       }
       await this.prisma.userSavedPost.create({
@@ -149,7 +149,7 @@ export class PostService {
       });
       return {
         statusCode: HttpStatus.OK,
-        message: 'Post salvo com sucesso.',
+        message: 'Post saved successfully.',
       } as SavePostResponseDTO;
     }
     if (alreadyExists) {
@@ -166,17 +166,17 @@ export class PostService {
         });
         return {
           statusCode: HttpStatus.OK,
-          message: 'Post removido com sucesso.',
+          message: 'Post removed successfully.',
         } as SavePostResponseDTO;
       }
       return {
         statusCode: HttpStatus.NO_CONTENT,
-        message: 'Nenhuma modificação foi necessária.',
+        message: 'No modification were needed.',
       } as SavePostResponseDTO;
     }
     return {
       statusCode: HttpStatus.NOT_FOUND,
-      message: 'Post salvo não encontrado para remoção.',
+      message: 'Saved post not found to remove',
     } as SavePostResponseDTO;
   }
 }

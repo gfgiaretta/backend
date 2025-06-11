@@ -86,6 +86,4 @@ export class SavePostDTO {
   @ApiProperty({ example: true })
   @IsBoolean()
   save: boolean;
-
-  userId?: string;
 }
