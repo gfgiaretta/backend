@@ -2,10 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { Exercise } from '@prisma/client';
 import { UserExerciseMapper } from '../mappers/userExercise.mapper';
-import {
-  UserExerciseDTO,
-  UserExerciseHistoryDTO,
-} from '../dtos/userExercise.dto';
+import { UserExerciseHistoryDTO } from '../dtos/userExercise.dto';
 
 @Injectable()
 export class ExerciseService {
@@ -82,29 +79,44 @@ export class ExerciseService {
     return exercisesReturned;
   }
 
-  async registerExercise({
-    userId,
-    exerciseId,
-  }: UserExerciseDTO): Promise<HttpStatus> {
+  async registerExercise(
+    userId: string,
+    exerciseId: string,
+  ): Promise<HttpStatus> {
     const exercise = await this.prisma.exercise.findUnique({
-      where: { exercise_id: exerciseId },
+      where: { exercise_id: exerciseId, deletedAt: null },
     });
+
     if (!exercise) {
       throw new HttpException('Exercise not found.', HttpStatus.NOT_FOUND);
     }
 
     const user = await this.prisma.user.findUnique({
-      where: { user_id: userId },
+      where: { user_id: userId, deletedAt: null },
     });
+
     if (!user) {
       throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }
 
-    const userExercise = UserExerciseMapper.toPrisma(
-      user.user_id,
-      exercise.exercise_id,
-    );
+    const alreadyRegistered = await this.prisma.userExercise.findFirst({
+      where: {
+        user_id: userId,
+        exercise_id: exerciseId,
+      },
+    });
+
+    if (alreadyRegistered) {
+      throw new HttpException(
+        'Exercise already registered by user.',
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userExercise = UserExerciseMapper.toPrisma(userId, exerciseId);
+
     await this.prisma.userExercise.create({ data: userExercise });
+
     return HttpStatus.CREATED;
   }
 
