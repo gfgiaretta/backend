@@ -36,7 +36,7 @@ export class LibraryService {
     const library = await this.prisma.library.findUnique({
       where: { library_id: libraryId, deletedAt: null },
     });
-    if (!library || library.deletedAt) {
+    if (!library) {
       throw new HttpException('Library not found.', HttpStatus.NOT_FOUND);
     }
 
