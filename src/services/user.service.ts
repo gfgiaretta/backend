@@ -231,7 +231,7 @@ export class UserService {
     }
   }
 
-async getUserSavedItems(userId: string) {
+  async getUserSavedItems(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { user_id: userId },
       include: {
@@ -285,7 +285,7 @@ async getUserSavedItems(userId: string) {
     );
 
     const items = [...postResponseDTOs, ...libraryResponseDTOs];
-    
+
     items.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
     return items;

@@ -214,7 +214,8 @@ describe('UserService', () => {
     it('should return a list with saved post and library ordered by updatedAt', async () => {
       const mockUserId = mockTestUser.user_id;
 
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
+      const user = {
+        ...mockTestUser,
         user_savedLibrary: [
           {
             library: mockTestLibrarySaved,
@@ -227,33 +228,37 @@ describe('UserService', () => {
             deletedAt: null,
           },
         ],
-      } as any);
+      };
 
-      jest.spyOn(presignedService, 'getDownloadURL').mockResolvedValue('https://example.com/presigned-url');
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(user);
 
       const result = await service.getUserSavedItems(mockUserId);
 
       expect(Array.isArray(result)).toBe(true);
+      // eslint-disable-next-line no-magic-numbers
       expect(result.length).toBe(2);
 
-      const hasPost = result.some(item => 'post_id' in item);
-      const hasLibrary = result.some(item => 'library_id' in item);
+      const hasPost = result.some((item) => 'post_id' in item);
+      const hasLibrary = result.some((item) => 'library_id' in item);
 
       expect(hasPost).toBe(true);
       expect(hasLibrary).toBe(true);
 
-      expect(result[0].updatedAt.getTime()).toBeGreaterThanOrEqual(result[1].updatedAt.getTime());
+      expect(result[0].updatedAt.getTime()).toBeGreaterThanOrEqual(
+        result[1].updatedAt.getTime(),
+      );
     });
 
     it('should return an empty array', async () => {
       const mockUserId = mockTestUser.user_id;
 
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
+      const user = {
+        ...mockTestUser,
         user_savedLibrary: [],
         user_savedPost: [],
-      } as any);
+      };
 
-      jest.spyOn(presignedService, 'getDownloadURL').mockResolvedValue('https://example.com/presigned-url');
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(user);
 
       const result = await service.getUserSavedItems(mockUserId);
 
