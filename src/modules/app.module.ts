@@ -8,6 +8,7 @@ import { LibraryModule } from './library.module';
 import { ExerciseModule } from './exercise.module';
 import { PostModule } from './post.module';
 import { PresignedModule } from './presigned.module';
+import { CommentModule } from './comment.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PresignedModule } from './presigned.module';
     UserModule,
     PostModule,
     PresignedModule,
+    CommentModule,
   ],
   controllers: [],
   providers: [

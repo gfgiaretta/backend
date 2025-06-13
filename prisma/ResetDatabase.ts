@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 //can only be used in determined circumstances, they delete all the data in our database, each of the functions delete one table
 async function resetDatabase() {
   try {
+    await prisma.comment.deleteMany();
     await prisma.userSavedPost.deleteMany();
     await prisma.userInterest.deleteMany();
     await prisma.userExercise.deleteMany();
