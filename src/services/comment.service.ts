@@ -67,7 +67,6 @@ export class CommentService {
       },
     });
 
-    console.log(existingComment);
 
     if (!existingComment) {
       throw new HttpException('Comment does not exist', HttpStatus.BAD_REQUEST);
