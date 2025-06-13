@@ -2,7 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { Exercise } from '@prisma/client';
 import { UserExerciseMapper } from '../mappers/userExercise.mapper';
-import { UserExerciseDTO, UserExerciseHistoryDTO } from '../dtos/userExercise.dto';
+import {
+  UserExerciseDTO,
+  UserExerciseHistoryDTO,
+} from '../dtos/userExercise.dto';
 
 @Injectable()
 export class ExerciseService {
@@ -43,7 +46,7 @@ export class ExerciseService {
       description: item.exercise.description,
       interest: item.exercise.interest.title,
       performedAt: item.createdAt,
-      content: item.content,
+      content: item.content ?? {},
     }));
   }
 
@@ -80,11 +83,10 @@ export class ExerciseService {
     return exercisesReturned;
   }
 
-  async registerExercise({
-    userId,
-    exerciseId,
-    content,
-  }: UserExerciseDTO): Promise<HttpStatus> {
+  async registerExercise(
+    userId: string,
+    { exerciseId, content }: UserExerciseDTO,
+  ): Promise<HttpStatus> {
     const exercise = await this.prisma.exercise.findUnique({
       where: { exercise_id: exerciseId, deletedAt: null },
     });
@@ -115,7 +117,7 @@ export class ExerciseService {
       );
     }
 
-   const userExercise = UserExerciseMapper.toPrisma(
+    const userExercise = UserExerciseMapper.toPrisma(
       user.user_id,
       exercise.exercise_id,
       content,

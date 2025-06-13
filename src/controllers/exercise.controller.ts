@@ -12,6 +12,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Exercise } from '@prisma/client';
 import { AuthenticatedRequest } from '../dtos/auth.dto';
 import { UserService } from '../services/user.service';
+import { UserExerciseDTO } from '../dtos/userExercise.dto';
 
 @ApiTags('Exercises')
 @ApiBearerAuth('Authorization')
@@ -42,11 +43,11 @@ export class ExerciseController {
   @Post('/register')
   async registerExercise(
     @Req() req: AuthenticatedRequest,
-    @Body('exerciseId') exerciseId: string,
+    @Body() body: UserExerciseDTO,
   ): Promise<HttpStatus> {
     const response = await this.exerciseService.registerExercise(
       req.payload.userId,
-      exerciseId,
+      body,
     );
     await this.userService.updateUserStreak(req.payload.userId);
     return response;

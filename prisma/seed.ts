@@ -536,24 +536,28 @@ async function main() {
       {
         user_id: user4.user_id,
         exercise_id: melodiaNaturezaId,
+        content: {},
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         user_id: user5.user_id,
         exercise_id: cidadeCoresId,
+        content: {},
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         user_id: user.user_id,
         exercise_id: heroiInusitadoId,
+        content: {},
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         user_id: user2.user_id,
         exercise_id: futurismoUrbanoId,
+        content: {},
         createdAt: new Date(),
         updatedAt: new Date(),
       },

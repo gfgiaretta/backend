@@ -100,7 +100,10 @@ describe('ExerciseController', () => {
       },
     } as AuthenticatedRequest;
 
-    const exerciseId = mockTestExercise.exercise_id;
+    const userExerciseDTO = {
+      exerciseId: mockTestExercise.exercise_id,
+      content: { imageURL: 'https://drawnImage.com' },
+    };
 
     it('should return HttpStatus.CREATED if registration succeeds', async () => {
       const registerExerciseSpy = jest
@@ -113,13 +116,13 @@ describe('ExerciseController', () => {
 
       const result = await exerciseController.registerExercise(
         mockRequest,
-        exerciseId,
+        userExerciseDTO,
       );
 
       expect(result).toBe(HttpStatus.CREATED);
       expect(registerExerciseSpy).toHaveBeenCalledWith(
         mockTestUser.user_id,
-        exerciseId,
+        userExerciseDTO,
       );
       expect(updateUserStreakSpy).toHaveBeenCalledWith(mockTestUser.user_id);
     });
@@ -137,7 +140,7 @@ describe('ExerciseController', () => {
       jest.spyOn(userService, 'updateUserStreak').mockResolvedValue();
 
       await expect(
-        exerciseController.registerExercise(mockRequest, exerciseId),
+        exerciseController.registerExercise(mockRequest, userExerciseDTO),
       ).rejects.toThrow(exception);
     });
   });

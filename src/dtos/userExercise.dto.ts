@@ -1,18 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsJSON, IsString } from 'class-validator';
+import { InputJsonValue } from '@prisma/client/runtime/library';
+import { IsObject, IsString } from 'class-validator';
 
 export class UserExerciseDTO {
-  @ApiProperty({ example: 'ecc4901b-f248-4053-8832-24a9b4a6559e' })
-  @IsString()
-  userId: string;
-
   @ApiProperty({ example: '0b171ebe-9f75-40e8-9dad-1f667fc12ac5' })
   @IsString()
   exerciseId: string;
 
   @ApiProperty({ example: '{}' })
-  @IsJSON()
-  content: JSON;
+  @IsObject()
+  content: InputJsonValue;
 }
 
 export class UserExerciseHistoryDTO {
@@ -28,6 +25,7 @@ export class UserExerciseHistoryDTO {
   @ApiProperty({ example: '2025-04-01T12:00:00Z' })
   performedAt: Date;
 
-  @ApiProperty({ example: 'content json' })
-  content: string;
+  @ApiProperty({ example: '{}' })
+  @IsObject()
+  content: InputJsonValue;
 }
