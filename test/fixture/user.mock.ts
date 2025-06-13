@@ -17,7 +17,7 @@ export function mockUser({
     email: email || 'John.doe@domain.com',
     description: description || 'This is a description',
     password: 'Senh@123',
-    profile_picture_path: 'https://thispersondoesnotexist.com/',
+    profile_picture_path: 'https://signedDownloadUrl.com',
     streak: streak || 0,
     createdAt: createdAt || new Date('2025-02-24T17:30:00'),
     updatedAt: updatedAt || new Date('2025-02-24T17:30:00'),
@@ -26,6 +26,7 @@ export function mockUser({
 }
 
 export const mockTestUser: User = mockUser({
+  user_id: 'b60b728d450146a1bbb4836ed61c93c7',
   name: 'John Doe',
   email: 'John.doe@domain.com',
 });

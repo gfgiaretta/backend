@@ -42,8 +42,7 @@ model Exercise {
   type          String
   title         String
   description   String
-  text_field    String[]
-  image_url     String?
+  content       Json
   interest_id   String
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
