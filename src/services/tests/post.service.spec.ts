@@ -16,7 +16,6 @@ jest.mock('@aws-sdk/client-s3');
 describe('PostService', () => {
   let service: PostService;
   let prisma: PrismaService;
-  let presignedService: PresignedService;
   const page = 1;
   const postsPerPage = 10;
 
@@ -41,7 +40,6 @@ describe('PostService', () => {
 
     service = module.get<PostService>(PostService);
     prisma = module.get<PrismaService>(PrismaService);
-    presignedService = module.get<PresignedService>(PresignedService);
   });
 
   it('should be defined', () => {
@@ -65,9 +63,6 @@ describe('PostService', () => {
       .spyOn(prisma.post, 'findMany')
       .mockResolvedValue([mockTestPost, mockTestPostSaved]);
     jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
-    jest
-      .spyOn(presignedService, 'getDownloadURL')
-      .mockResolvedValue('https://example.com/presigned-url');
 
     const result = await service.getPostsWithSavedStatusPaginated(
       '2140b95c-9de6-46b3-a86f-1047fc9278e9',
@@ -80,9 +75,6 @@ describe('PostService', () => {
   it('should return an array with 1 saved post', async () => {
     jest.spyOn(prisma.post, 'findMany').mockResolvedValue([mockTestPostSaved]);
     jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
-    jest
-      .spyOn(presignedService, 'getDownloadURL')
-      .mockResolvedValue('https://example.com/presigned-url');
 
     const result = await service.getPostsWithSavedStatusPaginated(
       'b60b728d450146a1bbb4836ed61c93c7',
@@ -96,9 +88,6 @@ describe('PostService', () => {
   it('should return an array with 1 unsaved post', async () => {
     jest.spyOn(prisma.post, 'findMany').mockResolvedValue([mockTestPost]);
     jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockTestUser);
-    jest
-      .spyOn(presignedService, 'getDownloadURL')
-      .mockResolvedValue('https://example.com/presigned-url');
 
     const result = await service.getPostsWithSavedStatusPaginated(
       '2140b95c-9de6-46b3-a86f-1047fc9278e9',

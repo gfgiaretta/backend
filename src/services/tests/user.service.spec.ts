@@ -19,13 +19,13 @@ import {
 } from '../../../test/fixture/post.mock';
 import { mockTestUserProfile } from '../../../test/fixture/userProfile.mock';
 import { mockTestLibrarySaved } from '../../../test/fixture/library.mock';
+import { mockTestUserExercise } from '../../../test/fixture/userExercise.mock';
 
 jest.mock('@aws-sdk/client-s3');
 
 describe('UserService', () => {
   let service: UserService;
   let prisma: PrismaService;
-  let presignedService: PresignedService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -55,7 +55,6 @@ describe('UserService', () => {
 
     service = module.get<UserService>(UserService);
     prisma = module.get<PrismaService>(PrismaService);
-    presignedService = module.get<PresignedService>(PresignedService);
   });
 
   describe('create', () => {
@@ -168,16 +167,13 @@ describe('UserService', () => {
       jest
         .spyOn(prisma.post, 'findMany')
         .mockResolvedValue([mockTestPost, mockTestPostSaved]);
-      jest
-        .spyOn(presignedService, 'getDownloadURL')
-        .mockResolvedValue('https://example.com/presigned-url');
 
       const result = await service.getUserProfile(mockTestUser.user_id);
 
       expect(result).toEqual(mockTestUserProfile);
     });
 
-    it('should throw exception if user not found', async () => {
+    it('should throw exception if user not found.', async () => {
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
 
       await expect(
@@ -189,14 +185,79 @@ describe('UserService', () => {
   });
 
   describe('updateUserStreak', () => {
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2025-06-02T10:00:00Z'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
     it('should increase the user streak if they have done a streak in the last day', async () => {
-      // TODO
-      expect(false).toBe(true);
+      const yesterday = new Date('2025-06-01T08:00:00Z');
+      const today = new Date('2025-06-02T10:00:00Z');
+
+      const user = {
+        ...mockTestUser,
+        updatedAt: yesterday,
+        streak: 1,
+      };
+
+      const latestExercise = {
+        ...mockTestUserExercise,
+        createdAt: today,
+      };
+
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(user);
+      jest
+        .spyOn(prisma.userExercise, 'findFirst')
+        .mockResolvedValue(latestExercise);
+      const updateSpy = jest
+        .spyOn(prisma.user, 'update')
+        .mockResolvedValue({ ...user, streak: 2 });
+
+      await service.updateUserStreak(user.user_id);
+
+      expect(updateSpy).toHaveBeenCalledTimes(1);
+
+      const calledArgs = updateSpy.mock.calls[0][0];
+      expect(calledArgs).toMatchObject({
+        where: { user_id: user.user_id },
+        data: { streak: 2 },
+      });
     });
 
     it('should reset the user streak if they have not done a streak in the last day', async () => {
-      // TODO
-      expect(false).toBe(true);
+      const threeDaysAgo = new Date('2025-05-30T10:00:00Z');
+
+      const user = {
+        ...mockTestUser,
+        updatedAt: threeDaysAgo,
+        streak: 3,
+      };
+
+      const latestExercise = {
+        ...mockTestUserExercise,
+        createdAt: threeDaysAgo,
+      };
+
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(user);
+      jest
+        .spyOn(prisma.userExercise, 'findFirst')
+        .mockResolvedValue(latestExercise);
+      const updateSpy = jest
+        .spyOn(prisma.user, 'update')
+        .mockResolvedValue({ ...user, streak: 0 });
+
+      await service.updateUserStreak(user.user_id);
+
+      expect(updateSpy).toHaveBeenCalledTimes(1);
+
+      const calledArgs = updateSpy.mock.calls[0][0];
+      expect(calledArgs).toMatchObject({
+        where: { user_id: user.user_id },
+        data: { streak: 0 },
+      });
     });
 
     it('should throw if user is not found', async () => {
@@ -275,8 +336,31 @@ describe('UserService', () => {
 
   describe('getUserStreak', () => {
     it('should retrieve the user streak', async () => {
-      // TODO
-      expect(false).toBe(true);
+      const today = new Date('2025-06-02T10:00:00Z');
+
+      const user = {
+        ...mockTestUser,
+        streak: 5,
+      };
+
+      const latestExercise = {
+        ...mockTestUserExercise,
+        createdAt: today,
+      };
+
+      jest
+        .spyOn(prisma.user, 'findUnique')
+        .mockResolvedValue({ ...mockTestUser, streak: 5 });
+      jest
+        .spyOn(prisma.userExercise, 'findFirst')
+        .mockResolvedValue(latestExercise);
+
+      const result = await service.getUserStreak(user.user_id);
+
+      expect(result).toEqual({
+        streak: 5,
+        lastExerciseDate: today,
+      });
     });
 
     it('should throw if user is not found', async () => {

@@ -194,10 +194,12 @@ export class UserService {
       orderBy: { createdAt: 'desc' },
     });
 
+    const today = new Date();
     let newStreak: number;
     let daysSince: number;
+
     if (latestExercise && latestExercise.createdAt) {
-      daysSince = new Date().getDate() - latestExercise.createdAt.getDate();
+      daysSince = diffDays(today, latestExercise.createdAt);
     } else {
       const defaultDaysSince = 2;
       daysSince = defaultDaysSince;
@@ -206,14 +208,10 @@ export class UserService {
     if (latestExercise) {
       if (daysSince > 1) {
         newStreak = 0;
-      } else if (daysSince < 1) {
-        if (latestExercise.createdAt.getDate() !== user.updatedAt.getDate()) {
-          newStreak = user.streak + 1;
-        } else {
-          newStreak = user.streak;
-        }
       } else {
-        if (latestExercise.createdAt.getDate() !== user.updatedAt.getDate()) {
+        const alreadyUpdatedToday = isSameDay(user.updatedAt, today);
+
+        if (!alreadyUpdatedToday && (daysSince === 0 || daysSince === 1)) {
           newStreak = user.streak + 1;
         } else {
           newStreak = user.streak;
@@ -222,6 +220,7 @@ export class UserService {
     } else {
       newStreak = 0;
     }
+
     if (newStreak !== user.streak) {
       const data = UserMapper.toPrismaUpdateStreak(newStreak);
       await this.prisma.user.update({
@@ -311,4 +310,18 @@ export class UserService {
       lastExerciseDate: latestExercise?.createdAt || null,
     };
   }
+}
+
+function diffDays(d1: Date, d2: Date): number {
+  const diff = d1.getTime() - d2.getTime();
+  // eslint-disable-next-line no-magic-numbers
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+function isSameDay(date1: Date, date2: Date): boolean {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
 }
