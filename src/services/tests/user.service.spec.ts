@@ -18,6 +18,7 @@ import {
   mockTestPostSaved,
 } from '../../../test/fixture/post.mock';
 import { mockTestUserProfile } from '../../../test/fixture/userProfile.mock';
+import { mockTestLibrarySaved } from '../../../test/fixture/library.mock';
 import { mockTestUserExercise } from '../../../test/fixture/userExercise.mock';
 
 jest.mock('@aws-sdk/client-s3');
@@ -265,6 +266,69 @@ describe('UserService', () => {
       await expect(
         service.updateUserStreak('nonExistentUserId'),
       ).rejects.toThrow(
+        new HttpException('User not found.', HttpStatus.NOT_FOUND),
+      );
+    });
+  });
+
+  describe('getUserSavedItems', () => {
+    it('should return a list with saved post and library ordered by updatedAt', async () => {
+      const mockUserId = mockTestUser.user_id;
+
+      const user = {
+        ...mockTestUser,
+        user_savedLibrary: [
+          {
+            library: mockTestLibrarySaved,
+            deletedAt: null,
+          },
+        ],
+        user_savedPost: [
+          {
+            post: mockTestPostSaved,
+            deletedAt: null,
+          },
+        ],
+      };
+
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(user);
+
+      const result = await service.getUserSavedItems(mockUserId);
+
+      expect(Array.isArray(result)).toBe(true);
+      // eslint-disable-next-line no-magic-numbers
+      expect(result.length).toBe(2);
+
+      const hasPost = result.some((item) => 'post_id' in item);
+      const hasLibrary = result.some((item) => 'library_id' in item);
+
+      expect(hasPost).toBe(true);
+      expect(hasLibrary).toBe(true);
+
+      expect(result[0].updatedAt.getTime()).toBeGreaterThanOrEqual(
+        result[1].updatedAt.getTime(),
+      );
+    });
+
+    it('should return an empty array', async () => {
+      const mockUserId = mockTestUser.user_id;
+
+      const user = {
+        ...mockTestUser,
+        user_savedLibrary: [],
+        user_savedPost: [],
+      };
+
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(user);
+
+      const result = await service.getUserSavedItems(mockUserId);
+
+      expect(result).toEqual([]);
+    });
+    it('should throw an exception if user is not found', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(service.getUserStreak('nonExistentUserId')).rejects.toThrow(
         new HttpException('User not found.', HttpStatus.NOT_FOUND),
       );
     });

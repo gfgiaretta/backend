@@ -211,6 +211,40 @@ describe('UserController', () => {
     });
   });
 
+  describe('getUserSavedItems', () => {
+    it('should return no content http status', async () => {
+
+      jest.spyOn(userService, 'getUserSavedItems').mockResolvedValue([]);
+
+      const mockReq = {
+        payload: { userId: '123' },
+      } as AuthenticatedRequest;
+
+      const result = await userController.getUserSavedItems(mockReq);
+
+      expect(result).toEqual({
+        statusCode: HttpStatus.NO_CONTENT,
+        message: 'No saved items found.',
+      });
+    });
+
+    it('should throw internal server error', async () => {
+      jest
+        .spyOn(userService, 'getUserSavedItems')
+        .mockRejectedValue(
+          new HttpException('An unexpected error occurred', HttpStatus.INTERNAL_SERVER_ERROR)
+        );
+
+      const mockReq = {
+        payload: { userId: '123' },
+      } as AuthenticatedRequest;
+
+      await expect(userController.getUserSavedItems(mockReq)).rejects.toThrow(
+        new HttpException('An unexpected error occurred', HttpStatus.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
   describe('getUserProfile', () => {
     it('should return user profile', async () => {
       jest

@@ -8,6 +8,7 @@ import { HashService } from './hash.service';
 import { UpdateProfileDto } from '../dtos/user.dto';
 import { PostResponseDTO } from '../dtos/post.dto';
 import { PresignedService } from './presigned.service';
+import { LibraryResponseDTO } from 'src/dtos/library.dto';
 
 @Injectable()
 export class UserService {
@@ -227,6 +228,66 @@ export class UserService {
         data,
       });
     }
+  }
+
+  async getUserSavedItems(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { user_id: userId },
+      include: {
+        user_savedPost: {
+          where: { deletedAt: null },
+          include: { post: true },
+        },
+        user_savedLibrary: {
+          where: { deletedAt: null },
+          include: { library: true },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
+    }
+
+    const postResponseDTOs: PostResponseDTO[] = await Promise.all(
+      user.user_savedPost.map(async (item) => ({
+        post_id: item.post.post_id,
+        owner: {
+          name: user.name || '',
+          profile_picture_url: await this.presignedService.getDownloadURL(
+            user.profile_picture_path ?? '',
+          ),
+        },
+        title: item.post.title,
+        description: item.post.description ?? undefined,
+        image_url: await this.presignedService.getDownloadURL(
+          item.post.image_url ?? '',
+        ),
+        createdAt: item.post.createdAt,
+        updatedAt: item.post.updatedAt,
+        isSaved: true,
+      })),
+    );
+
+    const libraryResponseDTOs: LibraryResponseDTO[] = await Promise.all(
+      user.user_savedLibrary.map(async (item) => ({
+        library_id: item.library.library_id,
+        description: item.library.description,
+        link: item.library.link,
+        image_url: await this.presignedService.getDownloadURL(
+          item.library.image_url ?? '',
+        ),
+        createdAt: item.library.createdAt,
+        updatedAt: item.library.updatedAt,
+        isSaved: true,
+      })),
+    );
+
+    const items = [...postResponseDTOs, ...libraryResponseDTOs];
+
+    items.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+
+    return items;
   }
 
   async getUserStreak(userId: string): Promise<UserStreakDTO> {
