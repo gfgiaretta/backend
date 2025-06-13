@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { LibraryResponseDTO } from '../dtos/library.dto';
 
@@ -30,5 +30,90 @@ export class LibraryService {
           isSaved: item.user_savedLibrary.length > 0,
         }) as LibraryResponseDTO,
     );
+  }
+
+  async saveLibrary(userId: string, libraryId: string, shouldSave: boolean) {
+    const library = await this.prisma.library.findUnique({
+      where: { library_id: libraryId, deletedAt: null },
+    });
+    if (!library) {
+      throw new HttpException('Library not found.', HttpStatus.NOT_FOUND);
+    }
+
+    const existing = await this.prisma.userSavedLibrary.findFirst({
+      where: {
+        user_id: userId,
+        library_id: libraryId,
+      },
+    });
+
+    if (shouldSave) {
+      if (!existing) {
+        await this.prisma.userSavedLibrary.create({
+          data: {
+            user_id: userId,
+            library_id: libraryId,
+          },
+        });
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Library saved.',
+        };
+      }
+      if (existing.deletedAt) {
+        await this.prisma.userSavedLibrary.update({
+          where: {
+            user_id_library_id: {
+              user_id: userId,
+              library_id: libraryId,
+            },
+          },
+          data: {
+            deletedAt: null,
+            updatedAt: new Date(),
+          },
+        });
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'LibrarySaved restored.',
+        };
+      }
+      return {
+        statusCode: HttpStatus.NO_CONTENT,
+        message: 'Library already saved.',
+      };
+    }
+
+    if (!existing) {
+      throw new HttpException(
+        'UserSavedLibrary not found.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (existing.deletedAt) {
+      return {
+        statusCode: HttpStatus.NO_CONTENT,
+        message: 'Library already unsaved.',
+      };
+    }
+
+    await this.prisma.userSavedLibrary.update({
+      where: {
+        user_id_library_id: {
+          user_id: userId,
+          library_id: libraryId,
+        },
+      },
+      data: {
+        deletedAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Library unsaved.',
+    };
   }
 }
