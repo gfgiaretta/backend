@@ -70,7 +70,6 @@ export class ExerciseService {
     endOfDay.setHours(23, 59, 59, 999);
 
     const exercisesReturned = await this.prisma.exercise.findMany({
-      distinct: ['type'],
       where: {
         interest_id: { in: interestIds },
         createdAt: {
