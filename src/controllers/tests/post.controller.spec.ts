@@ -11,8 +11,6 @@ import {
 import { AuthenticatedRequest } from 'src/dtos/auth.dto';
 import { PresignedService } from '../../services/presigned.service';
 import { HttpStatus } from '@nestjs/common';
-import { mockTestUser } from 'test/fixture/user.mock';
-import { mockTestUserInterest } from 'test/fixture/userInterest.mock';
 
 jest.mock('@aws-sdk/client-s3');
 
@@ -136,7 +134,10 @@ describe('PostController', () => {
         payload: { userId: 'b60b728d450146a1bbb4836ed61c93c7' },
       } as AuthenticatedRequest;
 
-      const result = await postController.savePost(mockTestSavePost, mockRequest);
+      const result = await postController.savePost(
+        mockTestSavePost,
+        mockRequest,
+      );
 
       expect(result).toEqual({
         statusCode: HttpStatus.OK,
@@ -153,7 +154,10 @@ describe('PostController', () => {
         payload: { userId: 'b60b728d450146a1bbb4836ed61c93c7' },
       } as AuthenticatedRequest;
 
-      const result = await postController.savePost(mockTestSavePost, mockRequest);
+      const result = await postController.savePost(
+        mockTestSavePost,
+        mockRequest,
+      );
 
       expect(result).toEqual({
         statusCode: HttpStatus.NO_CONTENT,
@@ -171,7 +175,10 @@ describe('PostController', () => {
         payload: { userId: 'b60b728d450146a1bbb4836ed61c93c7' },
       } as AuthenticatedRequest;
 
-      const result = await postController.savePost(mockTestSavePost, mockRequest);
+      const result = await postController.savePost(
+        mockTestSavePost,
+        mockRequest,
+      );
 
       expect(result).toEqual({
         statusCode: HttpStatus.OK,
