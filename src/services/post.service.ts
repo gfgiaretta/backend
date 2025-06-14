@@ -1,6 +1,10 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { PostResponseDTO, postOwnerResponseDTO } from '../dtos/post.dto';
+import {
+  PostResponseDTO,
+  SavePostResponseDTO,
+  postOwnerResponseDTO,
+} from '../dtos/post.dto';
 import { PresignedService } from './presigned.service';
 import { PostMapper } from '../mappers/post.mapper';
 
@@ -75,5 +79,104 @@ export class PostService {
     );
     await this.prisma.post.create({ data: prismaData });
     return HttpStatus.CREATED;
+  }
+
+  async savePost(
+    userId: string,
+    postId: string,
+    save: boolean,
+  ): Promise<SavePostResponseDTO> {
+    const user = await this.prisma.user.findUnique({
+      where: { user_id: userId },
+    });
+
+    if (!postId || typeof save !== 'boolean') {
+      throw new HttpException(
+        'must have postId and save.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (!user) {
+      throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
+    }
+
+    const post = await this.prisma.post.findUnique({
+      where: { post_id: postId },
+    });
+
+    if (!post) {
+      throw new HttpException('Post not found.', HttpStatus.NOT_FOUND);
+    }
+
+    const alreadyExists = await this.prisma.userSavedPost.findUnique({
+      where: {
+        user_id_post_id: {
+          user_id: userId,
+          post_id: postId,
+        },
+      },
+    });
+
+    if (save) {
+      if (alreadyExists) {
+        if (alreadyExists.deletedAt === null) {
+          return {
+            statusCode: HttpStatus.NO_CONTENT,
+            message: 'No modification were needed.',
+          } as SavePostResponseDTO;
+        }
+        const data = PostMapper.toPrismaUpdateDate(false);
+        await this.prisma.userSavedPost.update({
+          where: {
+            user_id_post_id: {
+              user_id: userId,
+              post_id: postId,
+            },
+          },
+          data,
+        });
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Post saved successfully.',
+        } as SavePostResponseDTO;
+      }
+      await this.prisma.userSavedPost.create({
+        data: {
+          user: { connect: { user_id: userId } },
+          post: { connect: { post_id: postId } },
+        },
+      });
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Post saved successfully.',
+      } as SavePostResponseDTO;
+    }
+    if (alreadyExists) {
+      if (alreadyExists.deletedAt === null) {
+        const data = PostMapper.toPrismaUpdateDate(true);
+        await this.prisma.userSavedPost.update({
+          where: {
+            user_id_post_id: {
+              user_id: userId,
+              post_id: postId,
+            },
+          },
+          data,
+        });
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Post removed successfully.',
+        } as SavePostResponseDTO;
+      }
+      return {
+        statusCode: HttpStatus.NO_CONTENT,
+        message: 'No modification were needed.',
+      } as SavePostResponseDTO;
+    }
+    return {
+      statusCode: HttpStatus.NOT_FOUND,
+      message: 'Saved post not found to remove',
+    } as SavePostResponseDTO;
   }
 }

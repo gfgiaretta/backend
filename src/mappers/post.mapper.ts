@@ -16,4 +16,19 @@ export class PostMapper {
       },
     };
   }
+
+  static toPrismaUpdateDate(
+    deletedAtNull: boolean,
+  ): Prisma.UserSavedPostUpdateInput {
+    if (deletedAtNull) {
+      return {
+        deletedAt: new Date(),
+        updatedAt: new Date(),
+      };
+    }
+    return {
+      deletedAt: null,
+      updatedAt: new Date(),
+    };
+  }
 }

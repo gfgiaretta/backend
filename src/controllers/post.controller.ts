@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Put,
   Post,
   Body,
   HttpException,
@@ -10,7 +11,11 @@ import {
 } from '@nestjs/common';
 import { AuthenticatedRequest } from '../dtos/auth.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { PostResponseDTO } from '../dtos/post.dto';
+import {
+  PostResponseDTO,
+  SavePostDTO,
+  SavePostResponseDTO,
+} from '../dtos/post.dto';
 import { PostService } from '../services/post.service';
 import { CreatePostDTO, CreatePostResponseDTO } from '../dtos/post.dto';
 
@@ -56,6 +61,25 @@ export class PostController {
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Post created successfully.',
+    };
+  }
+
+  @Put('/save')
+  async savePost(
+    @Body() body: SavePostDTO,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<SavePostResponseDTO> {
+    const userId = req.payload.userId;
+
+    const response = await this.postService.savePost(
+      userId,
+      body.postId,
+      body.save,
+    );
+
+    return {
+      statusCode: response.statusCode,
+      message: response.message,
     };
   }
 }

@@ -1,5 +1,5 @@
 import { Post, UserSavedPost } from '@prisma/client';
-import { PostResponseDTO } from '../../src/dtos/post.dto';
+import { PostResponseDTO, SavePostDTO } from '../../src/dtos/post.dto';
 
 export function mockPost({
   post_id,
@@ -75,4 +75,18 @@ export const mockTestPostResponse: PostResponseDTO = mockPostResponse({
 export const mockTestPostResponseSaved: PostResponseDTO = mockPostResponse({
   title: 'Meu primeiro post',
   isSaved: true,
+});
+
+export function mockUserSavesPost({
+  postId,
+  save,
+}: Partial<SavePostDTO>): SavePostDTO {
+  return {
+    postId: postId || 'd7e3b6e3-1f11-4fd2-86e3-23456789abcd',
+    save: save || true,
+  };
+}
+export const mockTestSavePost: SavePostDTO = mockUserSavesPost({
+  postId: 'd7e3b6e3-1f11-4fd2-86e3-23456789abcd',
+  save: true,
 });
