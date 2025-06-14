@@ -164,6 +164,40 @@ async function main() {
   const fotografiaId = getInterestId('Fotografia');
   const jogosId = getInterestId('Jogos');
   const modaId = getInterestId('Moda');
+  const artId = getInterestId('Arte');
+
+  const contentArtisticConnectionExercise = [
+    {
+      "obra" : {
+        "nome" : "Abaporu",
+        "imagem" : "ab475b80-e705-4ae0-bcb2-6ebab0829163/1749937691809.jpeg"
+      },
+      "artista" : {
+        "nome" : "Tarsila do Amaral",
+        "imagem" : "45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749938645707.jpeg"
+      } 
+    },
+    {
+      "obra" : {
+        "nome" : "O Artesão",
+        "imagem" : "45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939023021.jpeg"
+      },
+      "artista" : {
+        "nome" : "Vicente do Rego Monteiro",
+        "imagem" : "45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939091913.jpeg"
+      } 
+    },
+    {
+      "obra" : {
+        "nome" : "Paisagem da Espanha",
+        "imagem" : "45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939138479.jpeg"
+      },
+      "artista" : {
+        "nome" : "John Graz",
+        "imagem" : "45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939191031.jpeg"
+      } 
+    }
+  ]
 
   await prisma.exercise.createMany({
     data: [
@@ -287,6 +321,18 @@ async function main() {
         updatedAt: new Date(),
         deletedAt: null,
       },
+      {
+        exercise_id: uuidv4(),
+        type: 'Conexão Artística',
+        interest_id: artId,
+        title: 'Arte Moderna',
+        description:
+          'Aqui a ideia é refrescar a memória sobre a arte moderna. Relacione o artista com sua respectiva obra, selecionando-os um depois do outro.',
+        content: contentArtisticConnectionExercise,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      }
     ],
   });
 
@@ -617,8 +663,16 @@ async function main() {
         interest_id: designId,
       },
       {
+        user_id: user.user_id,
+        interest_id: artId,
+      },
+      {
         user_id: user2.user_id,
         interest_id: escritaId,
+      },
+      {
+        user_id: user2.user_id,
+        interest_id: artId,
       },
       {
         user_id: user3.user_id,
