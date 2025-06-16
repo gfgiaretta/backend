@@ -233,11 +233,22 @@ export class UserService {
   async getUserSavedItems(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { user_id: userId },
-      include: {
-        user_savedPost: {
-          where: { deletedAt: null },
-          include: { post: true },
-        },
+        include: {
+          user_savedPost: {
+            where: { deletedAt: null },
+            include: {
+              post: {
+                include: {
+                  user: {
+                    select: {
+                      name: true,
+                      profile_picture_path: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         user_savedLibrary: {
           where: { deletedAt: null },
           include: { library: true },
@@ -253,9 +264,9 @@ export class UserService {
       user.user_savedPost.map(async (item) => ({
         post_id: item.post.post_id,
         owner: {
-          name: user.name || '',
+          name: item.post.user.name || '',
           profile_picture_url: await this.presignedService.getDownloadURL(
-            user.profile_picture_path ?? '',
+            item.post.user.profile_picture_path ?? '',
           ),
         },
         title: item.post.title,
@@ -264,7 +275,7 @@ export class UserService {
           item.post.image_url ?? '',
         ),
         createdAt: item.post.createdAt,
-        updatedAt: item.post.updatedAt,
+        updatedAt: item.post.updatedAt, 
         isSaved: true,
       })),
     );
