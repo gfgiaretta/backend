@@ -26,7 +26,7 @@ export class PostService {
       include: {
         user_savedPost: {
           where: { user_id: userId },
-          select: { user_id: true },
+          select: { user_id: true, deletedAt: true },
         },
       },
       skip: (page - 1) * limit,
@@ -56,7 +56,9 @@ export class PostService {
           image_url: await this.presignedService.getDownloadURL(item.image_url),
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
-          isSaved: item.user_savedPost.length > 0,
+          isSaved:
+            item.user_savedPost.length > 0 &&
+            item.user_savedPost[0].deletedAt === null,
         } as PostResponseDTO;
       }),
     );
