@@ -220,7 +220,7 @@ async function main() {
         title: 'Desenhe seu mundo ideal',
         description:
           'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
-        content: { image_url: 'https://example.com/images/world.jpg' },
+        content: { image_url: '3aa6cb64-f91e-41a3-af53-1ae9c0c5f30d/1750027804037.jpeg' },
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -232,7 +232,7 @@ async function main() {
         title: 'Desenhe somente com uma cor!',
         description:
           'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
-        content: { image_url: 'https://example.com/images/world.jpg' },
+        content: { image_url: '3aa6cb64-f91e-41a3-af53-1ae9c0c5f30d/1750027879628.jpeg' },
         createdAt: createDatePast(1),
         updatedAt: createDatePast(1),
         deletedAt: null,
@@ -244,7 +244,7 @@ async function main() {
         title: 'Que tal inverter as coisas?',
         description:
           'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
-        content: { image_url: 'https://example.com/images/world.jpg' },
+        content: { image_url: '3aa6cb64-f91e-41a3-af53-1ae9c0c5f30d/1750027990315.jpeg' },
         createdAt: createDatePast(2),
         updatedAt: createDatePast(2),
         deletedAt: null,
@@ -256,7 +256,7 @@ async function main() {
         title: 'Desenhe seu maior sonho',
         description:
           'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
-        content: { image_url: 'https://example.com/images/world.jpg' },
+        content: { image_url: '3aa6cb64-f91e-41a3-af53-1ae9c0c5f30d/1750028035835.jpeg' },
         createdAt: createDatePast(3),
         updatedAt: createDatePast(3),
         deletedAt: null,
@@ -268,7 +268,7 @@ async function main() {
         title: 'Vamos criar uma logo?',
         description:
           'Aqui a ideia é inverter a lógica de tudo que sabemos sobre a criação de marca. Desenhe sua versão do logo abaixo da pior maneira que conseguir',
-        content: { image_url: 'https://example.com/images/world.jpg' },
+        content: { image_url: '3aa6cb64-f91e-41a3-af53-1ae9c0c5f30d/1750028119017.jpeg' },
         createdAt: createDatePast(4),
         updatedAt: createDatePast(4),
         deletedAt: null,
