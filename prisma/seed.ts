@@ -168,36 +168,36 @@ async function main() {
 
   const contentArtisticConnectionExercise = [
     {
-      "obra" : {
-        "nome" : "Abaporu",
-        "imagem" : "ab475b80-e705-4ae0-bcb2-6ebab0829163/1749937691809.jpeg"
+      artwork: {
+        name: 'Abaporu',
+        image: 'ab475b80-e705-4ae0-bcb2-6ebab0829163/1749937691809.jpeg',
       },
-      "artista" : {
-        "nome" : "Tarsila do Amaral",
-        "imagem" : "45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749938645707.jpeg"
-      } 
+      artist: {
+        name: 'Tarsila do Amaral',
+        image: '45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749938645707.jpeg',
+      },
     },
     {
-      "obra" : {
-        "nome" : "O Artesão",
-        "imagem" : "45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939023021.jpeg"
+      artwork: {
+        name: 'O Artesão',
+        image: '45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939023021.jpeg',
       },
-      "artista" : {
-        "nome" : "Vicente do Rego Monteiro",
-        "imagem" : "45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939091913.jpeg"
-      } 
+      artist: {
+        name: 'Vicente do Rego Monteiro',
+        image: '45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939091913.jpeg',
+      },
     },
     {
-      "obra" : {
-        "nome" : "Paisagem da Espanha",
-        "imagem" : "45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939138479.jpeg"
+      artwork: {
+        name: 'Paisagem da Espanha',
+        image: '45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939138479.jpeg',
       },
-      "artista" : {
-        "nome" : "John Graz",
-        "imagem" : "45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939191031.jpeg"
-      } 
-    }
-  ]
+      artist: {
+        name: 'John Graz',
+        image: '45387fe3-4aa4-4e04-8525-1396eb1e74d3/1749939191031.jpeg',
+      },
+    },
+  ];
 
   await prisma.exercise.createMany({
     data: [
@@ -332,7 +332,7 @@ async function main() {
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
-      }
+      },
     ],
   });
 
@@ -710,17 +710,18 @@ async function main() {
       {
         user_id: user2.user_id,
         post_id: postId,
-        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        content:
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
       },
       {
         user_id: user3.user_id,
         post_id: postId,
-        content: "Teste 2 🎨"
+        content: 'Teste 2 🎨',
       },
       {
         user_id: user.user_id,
         post_id: postId2,
-        content: "Hehe"
+        content: 'Hehe',
       },
     ],
   });
