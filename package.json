@@ -23,7 +23,7 @@
     "prisma:update": "prisma db push --accept-data-loss",
     "prisma:seed": "ts-node prisma/seed.ts",
     "prisma:delete": "ts-node prisma/ResetDatabase.ts",
-    "prisma:reset": "npm run prisma:format && npm run prisma:update && npm run prisma:delete && npm run prisma:seed",
+    "prisma:reset": "npm run prisma:delete && npm run prisma:format && npm run prisma:update && npm run prisma:seed",
     "prisma": "prisma studio",
     "setup": "npm install && npm run prisma:setup && npm run prisma:format && npm run prisma:update && npm run prisma:seed",
     "ci:setup": "npm ci && npm run prisma:setup && npm run prisma:format && npm run prisma:update && npm run prisma:seed",
