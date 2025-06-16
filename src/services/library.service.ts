@@ -13,7 +13,7 @@ export class LibraryService {
       include: {
         user_savedLibrary: {
           where: { user_id: userId },
-          select: { user_id: true },
+          select: { user_id: true, deletedAt: true },
         },
       },
     });
@@ -27,7 +27,9 @@ export class LibraryService {
           image_url: item.image_url,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
-          isSaved: item.user_savedLibrary.length > 0,
+          isSaved:
+            item.user_savedLibrary.length > 0 &&
+            item.user_savedLibrary[0].deletedAt === null,
         }) as LibraryResponseDTO,
     );
   }
