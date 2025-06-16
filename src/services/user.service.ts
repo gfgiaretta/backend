@@ -185,47 +185,64 @@ export class UserService {
     const user = await this.prisma.user.findUnique({
       where: { user_id: userId, deletedAt: null },
     });
+  
     if (!user) {
       throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }
-
-    const latestExercise = await this.prisma.userExercise.findFirst({
-      where: { user_id: userId, deletedAt: null },
+  
+    const today = new Date();
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  
+    // Check if there's already an exercise today
+    const hasTodayExercise = await this.prisma.userExercise.findFirst({
+      where: {
+        user_id: userId,
+        deletedAt: null,
+        createdAt: {
+          gte: startOfToday,
+        },
+      },
+    });
+  
+    if (!hasTodayExercise) {
+      // Don't update the streak if there's no exercise today
+      return;
+    }
+  
+    // Check the most recent exercise *before today*
+    const previousExercise = await this.prisma.userExercise.findFirst({
+      where: {
+        user_id: userId,
+        deletedAt: null,
+        createdAt: {
+          lt: startOfToday,
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
-
-    const today = new Date();
-    let newStreak: number;
-    let daysSince: number;
-
-    if (latestExercise && latestExercise.createdAt) {
-      daysSince = diffDays(today, latestExercise.createdAt);
-    } else {
-      const defaultDaysSince = 2;
-      daysSince = defaultDaysSince;
-    }
-
-    if (latestExercise) {
-      if (daysSince > 1) {
-        newStreak = 0;
+  
+    let newStreak = 1;
+  
+    if (previousExercise) {
+      const prevDate = new Date(previousExercise.createdAt);
+      const prevDateStart = new Date(prevDate.getFullYear(), prevDate.getMonth(), prevDate.getDate());
+      const daysBetween = Math.floor(
+        (startOfToday.getTime() - prevDateStart.getTime()) / (1000 * 60 * 60 * 24)
+      );
+  
+      if (daysBetween === 1) {
+        newStreak = user.streak + 1;
       } else {
-        const alreadyUpdatedToday = isSameDay(user.updatedAt, today);
-
-        if (!alreadyUpdatedToday && (daysSince === 0 || daysSince === 1)) {
-          newStreak = user.streak + 1;
-        } else {
-          newStreak = user.streak;
-        }
+        newStreak = 1;
       }
-    } else {
-      newStreak = 0;
     }
-
+  
     if (newStreak !== user.streak) {
-      const data = UserMapper.toPrismaUpdateStreak(newStreak);
       await this.prisma.user.update({
         where: { user_id: userId },
-        data,
+        data: {
+          streak: newStreak,
+        },
       });
     }
   }
