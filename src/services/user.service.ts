@@ -8,6 +8,7 @@ import { HashService } from './hash.service';
 import { UpdateProfileDto } from '../dtos/user.dto';
 import { PostResponseDTO } from '../dtos/post.dto';
 import { PresignedService } from './presigned.service';
+import { LibraryResponseDTO } from 'src/dtos/library.dto';
 
 @Injectable()
 export class UserService {
@@ -184,6 +185,7 @@ export class UserService {
     const user = await this.prisma.user.findUnique({
       where: { user_id: userId, deletedAt: null },
     });
+
     if (!user) {
       throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }
@@ -193,10 +195,13 @@ export class UserService {
       orderBy: { createdAt: 'desc' },
     });
 
+    const today = new Date();
+
     let newStreak: number;
     let daysSince: number;
+
     if (latestExercise && latestExercise.createdAt) {
-      daysSince = new Date().getDate() - latestExercise.createdAt.getDate();
+      daysSince = diffDays(today, latestExercise.createdAt);
     } else {
       const defaultDaysSince = 2;
       daysSince = defaultDaysSince;
@@ -205,15 +210,12 @@ export class UserService {
     if (latestExercise) {
       if (daysSince > 1) {
         newStreak = 0;
-      } else if (daysSince < 1) {
-        if (latestExercise.createdAt.getDate() !== user.updatedAt.getDate()) {
-          newStreak = user.streak + 1;
-        } else {
-          newStreak = user.streak;
-        }
       } else {
-        if (latestExercise.createdAt.getDate() !== user.updatedAt.getDate()) {
+        const alreadyUpdatedToday = isSameDay(user.updatedAt, today);
+        if (!alreadyUpdatedToday && (daysSince === 0 || daysSince === 1)) {
           newStreak = user.streak + 1;
+        } else if (alreadyUpdatedToday && isSameDay(user.createdAt, today)) {
+          newStreak = 1;
         } else {
           newStreak = user.streak;
         }
@@ -221,6 +223,7 @@ export class UserService {
     } else {
       newStreak = 0;
     }
+
     if (newStreak !== user.streak) {
       const data = UserMapper.toPrismaUpdateStreak(newStreak);
       await this.prisma.user.update({
@@ -228,6 +231,75 @@ export class UserService {
         data,
       });
     }
+  }
+
+  async getUserSavedItems(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { user_id: userId },
+      include: {
+        user_savedPost: {
+          where: { deletedAt: null },
+          include: {
+            post: {
+              include: {
+                user: {
+                  select: {
+                    name: true,
+                    profile_picture_path: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        user_savedLibrary: {
+          where: { deletedAt: null },
+          include: { library: true },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
+    }
+
+    const postResponseDTOs: PostResponseDTO[] = await Promise.all(
+      user.user_savedPost.map(async (item) => ({
+        post_id: item.post.post_id,
+        owner: {
+          name: item.post.user.name || '',
+          profile_picture_url: await this.presignedService.getDownloadURL(
+            item.post.user.profile_picture_path ?? '',
+          ),
+        },
+        title: item.post.title,
+        description: item.post.description ?? undefined,
+        image_url: await this.presignedService.getDownloadURL(
+          item.post.image_url ?? '',
+        ),
+        createdAt: item.post.createdAt,
+        updatedAt: item.post.updatedAt,
+        isSaved: true,
+      })),
+    );
+
+    const libraryResponseDTOs: LibraryResponseDTO[] = await Promise.all(
+      user.user_savedLibrary.map(async (item) => ({
+        library_id: item.library.library_id,
+        description: item.library.description,
+        link: item.library.link,
+        image_url: item.library.image_url,
+        createdAt: item.library.createdAt,
+        updatedAt: item.library.updatedAt,
+        isSaved: true,
+      })),
+    );
+
+    const items = [...postResponseDTOs, ...libraryResponseDTOs];
+
+    items.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+
+    return items;
   }
 
   async getUserStreak(userId: string): Promise<UserStreakDTO> {
@@ -250,4 +322,18 @@ export class UserService {
       lastExerciseDate: latestExercise?.createdAt || null,
     };
   }
+}
+
+function diffDays(d1: Date, d2: Date): number {
+  const diff = d1.getTime() - d2.getTime();
+  // eslint-disable-next-line no-magic-numbers
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+function isSameDay(date1: Date, date2: Date): boolean {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
 }

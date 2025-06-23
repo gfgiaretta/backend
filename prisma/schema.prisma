@@ -14,7 +14,7 @@ model User {
   description          String?
   email                String             @unique
   password             String
-  profile_picture_path String?            @default("default_profile.jpeg")
+  profile_picture_path String?            @default("defaults/default_profile.jpeg")
   streak               Int
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
@@ -24,6 +24,7 @@ model User {
   user_interest        UserInterest[]
   user_savedLibrary    UserSavedLibrary[]
   user_savedPost       UserSavedPost[]
+  user_comments        Comment[]
 }
 
 model Interest {
@@ -41,8 +42,7 @@ model Exercise {
   type          String
   title         String
   description   String
-  text_field    String[]
-  image_url     String?
+  content       Json
   interest_id   String
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -56,12 +56,13 @@ model Post {
   owner_Id       String
   title          String
   description    String?
-  image_url      String          @default("default_post.jpeg")
+  image_url      String          @default("defaults/default_post.jpeg")
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   deletedAt      DateTime?
   user           User            @relation(fields: [owner_Id], references: [user_id], onDelete: NoAction)
   user_savedPost UserSavedPost[]
+  post_comments  Comment[]
 }
 
 model Library {
@@ -90,6 +91,7 @@ model UserInterest {
 model UserExercise {
   user_id     String
   exercise_id String
+  content     Json
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -121,4 +123,16 @@ model UserSavedLibrary {
   user       User      @relation(fields: [user_id], references: [user_id], onDelete: NoAction)
 
   @@id([user_id, library_id])
+}
+
+model Comment {
+  comment_id String    @id @default(uuid())
+  post_id    String
+  user_id    String
+  content    String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+  user       User      @relation(fields: [user_id], references: [user_id])
+  post       Post      @relation(fields: [post_id], references: [post_id])
 }
