@@ -288,9 +288,7 @@ export class UserService {
         library_id: item.library.library_id,
         description: item.library.description,
         link: item.library.link,
-        image_url: await this.presignedService.getDownloadURL(
-          item.library.image_url ?? '',
-        ),
+        image_url: item.library.image_url,
         createdAt: item.library.createdAt,
         updatedAt: item.library.updatedAt,
         isSaved: true,
